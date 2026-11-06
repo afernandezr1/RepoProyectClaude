@@ -5,6 +5,7 @@
  */
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
+import { AndroidImportance } from 'expo-notifications';
 import { toNotificationWeekday } from '../domain/dates';
 import type { Reminder } from '../domain/types';
 
@@ -67,7 +68,7 @@ export async function syncReminders(
     if (Platform.OS === 'android') {
       await Notifications.setNotificationChannelAsync(CHANNEL_ID, {
         name: 'Reminders',
-        importance: Notifications.AndroidImportance.DEFAULT,
+        importance: AndroidImportance.DEFAULT,
       });
     }
     let count = 0;

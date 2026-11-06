@@ -29,7 +29,8 @@ Then scan the QR code with Expo Go, or press `i` for the iOS simulator, `a` for 
 | `npm start` / `npm run ios` / `npm run android` / `npm run web` | Start the dev server |
 | `npm test` | Unit tests plus the end-to-end happy path (Jest) |
 | `npm run typecheck` | `tsc --noEmit` |
-| `npm run check` | Typecheck and tests |
+| `npm run lint` | ESLint (`expo lint`, eslint-config-expo) |
+| `npm run check` | Typecheck, lint and tests |
 | `npm run build:dev:ios` / `npm run build:dev:android` | Local development build (`expo run:*`), needed only for health integration |
 | `npm run e2e:web` | Optional browser smoke test of the UI (see [Tests](#tests)) |
 

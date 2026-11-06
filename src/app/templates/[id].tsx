@@ -1,11 +1,11 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { confirm } from '../../components/confirm';
 import { ExercisePicker } from '../../components/ExercisePicker';
 import { Banner, ErrorState, LoadingState, errorMessage, type BannerMessage } from '../../components/states';
 import { Body, Button, Card, Field, Muted, Row, Screen } from '../../components/ui';
 import { templateSuggestions } from '../../domain/routine';
-import type { Exercise, ExerciseKind } from '../../domain/types';
+import type { Exercise, ExerciseKind, Template } from '../../domain/types';
 import { validateName, validateTemplateExercise, validateText } from '../../domain/validation';
 import { useApp, useLoad } from '../../state/AppContext';
 
@@ -23,41 +23,11 @@ const nextKey = () => `k${++keySeq}`;
 export default function EditTemplate() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const isNew = id === 'new';
-  const { store, settings, bump } = useApp();
   const { state, retry } = useLoad(
     async (s) => ({ template: isNew ? null : await s.getTemplate(String(id)), exercises: await s.listExercises() }),
     [id],
   );
-  const [name, setName] = useState('');
-  const [notes, setNotes] = useState('');
-  const [rows, setRows] = useState<Draft[]>([]);
-  const [loaded, setLoaded] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [picking, setPicking] = useState(false);
-  const [msg, setMsg] = useState<BannerMessage | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [extraExercises, setExtraExercises] = useState<Exercise[]>([]);
-
-  useEffect(() => {
-    if (state.status !== 'ready' || loaded) return;
-    const tpl = state.data.template;
-    if (tpl) {
-      setName(tpl.name);
-      setNotes(tpl.notes);
-      setRows(
-        tpl.exercises.map((e) => ({
-          key: nextKey(),
-          exerciseId: e.exerciseId,
-          targetSets: String(e.targetSets),
-          targetReps: e.targetReps != null ? String(e.targetReps) : '',
-          restSeconds: String(e.restSeconds),
-        })),
-      );
-    }
-    setLoaded(true);
-  }, [state, loaded]);
-
-  if (state.status === 'loading' || (state.status === 'ready' && !loaded)) return <LoadingState />;
+  if (state.status === 'loading') return <LoadingState />;
   if (state.status === 'error') {
     return (
       <Screen>
@@ -72,7 +42,48 @@ export default function EditTemplate() {
       </Screen>
     );
   }
-  const exercises = [...state.data.exercises, ...extraExercises];
+  // Keyed so the form re-initialises if a different template is opened.
+  return (
+    <TemplateEditor
+      key={String(id)}
+      id={String(id)}
+      isNew={isNew}
+      template={state.data.template}
+      baseExercises={state.data.exercises}
+    />
+  );
+}
+
+function TemplateEditor({
+  id,
+  isNew,
+  template,
+  baseExercises,
+}: {
+  id: string;
+  isNew: boolean;
+  template: Template | null;
+  baseExercises: Exercise[];
+}) {
+  const { store, settings, bump } = useApp();
+  const [name, setName] = useState(template?.name ?? '');
+  const [notes, setNotes] = useState(template?.notes ?? '');
+  const [rows, setRows] = useState<Draft[]>(() =>
+    (template?.exercises ?? []).map((e) => ({
+      key: nextKey(),
+      exerciseId: e.exerciseId,
+      targetSets: String(e.targetSets),
+      targetReps: e.targetReps != null ? String(e.targetReps) : '',
+      restSeconds: String(e.restSeconds),
+    })),
+  );
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [picking, setPicking] = useState(false);
+  const [msg, setMsg] = useState<BannerMessage | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [extraExercises, setExtraExercises] = useState<Exercise[]>([]);
+
+  const exercises = [...baseExercises, ...extraExercises];
   const names = new Map(exercises.map((e) => [e.id, e.name]));
 
   const update = (key: string, patch: Partial<Draft>) =>
@@ -116,7 +127,7 @@ export default function EditTemplate() {
     setBusy(true);
     try {
       const saved = await store.saveTemplate({
-        id: isNew ? undefined : String(id),
+        id: isNew ? undefined : id,
         name: nm.value,
         notes: nt.value,
         exercises: parsed.filter((p): p is NonNullable<typeof p> => p !== null),
@@ -134,7 +145,7 @@ export default function EditTemplate() {
   const remove = async () => {
     if (!(await confirm('Delete template?', 'Past workouts stay in your history.', 'Delete', true))) return;
     try {
-      await store.deleteTemplate(String(id));
+      await store.deleteTemplate(id);
       bump();
       router.back();
     } catch (e) {

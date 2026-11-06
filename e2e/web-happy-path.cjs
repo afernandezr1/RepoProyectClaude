@@ -41,7 +41,7 @@ fs.mkdirSync(SP, { recursive: true });
     await step('patterns', async () => { await p.goto(BASE + '/trends'); await p.getByText('This week: 1 session').waitFor(); });
     await step('add sleep log', async () => {
       await p.goto(BASE + '/logs'); await tid('add-log').click();
-      await p.getByRole('radio', { name: 'Sleep' }).click();
+      await tid('log-kind-sleep').click();
       await tid('log-value').fill('30'); await tid('save-log').click();
       await p.getByText('A single entry can be at most 24 hours.').waitFor();
       await tid('log-value').fill('7.5'); await tid('save-log').click();
@@ -60,6 +60,7 @@ fs.mkdirSync(SP, { recursive: true });
       await tid('delete-all').click();
       await tid('accept-disclaimer').waitFor();
       await tid('accept-disclaimer').click();
+      await p.getByText('Start a workout').waitFor();
       await p.goto(BASE + '/history'); await p.getByText('No workouts logged yet').waitFor();
     });
   } catch (e) {

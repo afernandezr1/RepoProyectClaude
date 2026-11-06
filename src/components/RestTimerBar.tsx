@@ -25,7 +25,7 @@ export function RestTimerBar({
   onDismiss: () => void;
 }) {
   const t = useTheme();
-  const [now, setNow] = useState(Date.now());
+  const [now, setNow] = useState(() => Date.now());
   const notified = useRef<number | null>(null);
 
   useEffect(() => {

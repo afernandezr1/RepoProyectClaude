@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useFocusEffect } from 'expo-router';
 import { openAppDatabase } from '../db/expoDb';
 import { Store } from '../db/store';
@@ -24,8 +24,9 @@ type Boot =
 
 export function useBoot() {
   const [boot, setBoot] = useState<Boot>({ status: 'loading' });
-  const start = useCallback(() => {
-    setBoot({ status: 'loading' });
+  const [attempt, setAttempt] = useState(0);
+  useEffect(() => {
+    let cancelled = false;
     (async () => {
       try {
         const { db, path } = await openAppDatabase();
@@ -33,14 +34,20 @@ export function useBoot() {
         await store.init();
         const settings = await store.getSettings();
         configureNotifications();
-        setBoot({ status: 'ready', store, settings, dbPath: path });
+        if (!cancelled) setBoot({ status: 'ready', store, settings, dbPath: path });
       } catch (error) {
-        setBoot({ status: 'error', error });
+        if (!cancelled) setBoot({ status: 'error', error });
       }
     })();
+    return () => {
+      cancelled = true;
+    };
+  }, [attempt]);
+  const retry = useCallback(() => {
+    setBoot({ status: 'loading' });
+    setAttempt((a) => a + 1);
   }, []);
-  useEffect(start, [start]);
-  return { boot, retry: start };
+  return { boot, retry };
 }
 
 export function AppProvider({
@@ -91,8 +98,13 @@ export function useLoad<T>(load: (store: Store) => Promise<T>, deps: unknown[] =
   const { store, version } = useApp();
   const [state, setState] = useState<AsyncState<T>>({ status: 'loading' });
   const loadRef = useRef(load);
-  loadRef.current = load;
+  useLayoutEffect(() => {
+    loadRef.current = load;
+  });
   const seq = useRef(0);
+  // Callers pass small primitive deps (e.g. a route id); a stable key lets the
+  // dependency list stay a literal.
+  const depsKey = JSON.stringify(deps);
 
   const run = useCallback(() => {
     const my = ++seq.current;
@@ -104,8 +116,9 @@ export function useLoad<T>(load: (store: Store) => Promise<T>, deps: unknown[] =
       .catch((error) => {
         if (my === seq.current) setState({ status: 'error', error });
       });
+    // version/depsKey are intentional triggers: reload after writes or when params change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [store, version, ...deps]);
+  }, [store, version, depsKey]);
 
   useFocusEffect(
     useCallback(() => {

@@ -51,7 +51,7 @@ export default function NewLog() {
 
   return (
     <Screen>
-      <Segmented value={kind} onChange={changeKind} options={KINDS.map((k) => ({ value: k, label: LOG_KIND_LABEL[k] }))} />
+      <Segmented testID="log-kind" value={kind} onChange={changeKind} options={KINDS.map((k) => ({ value: k, label: LOG_KIND_LABEL[k] }))} />
       {isDuration ? (
         <>
           <Field

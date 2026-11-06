@@ -166,11 +166,14 @@ export function Segmented<T extends string>({
   value,
   onChange,
   label,
+  testID,
 }: {
   options: { value: T; label: string }[];
   value: T;
   onChange: (v: T) => void;
   label?: string;
+  /** Each option gets `${testID}-${value}`. */
+  testID?: string;
 }) {
   const t = useTheme();
   return (
@@ -182,6 +185,7 @@ export function Segmented<T extends string>({
           return (
             <Pressable
               key={o.value}
+              testID={testID ? `${testID}-${o.value}` : undefined}
               accessibilityRole="radio"
               accessibilityState={{ selected }}
               accessibilityLabel={label ? `${label}: ${o.label}` : o.label}
