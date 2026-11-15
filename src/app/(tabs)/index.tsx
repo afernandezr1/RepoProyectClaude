@@ -6,7 +6,7 @@ import { mondayWeekday, WEEKDAY_LONG } from '../../domain/dates';
 import { useApp, useLoad } from '../../state/AppContext';
 
 export default function Today() {
-  const { store, settings, bump } = useApp();
+  const { store, settings, bump, persistent } = useApp();
   const { state, retry } = useLoad(async (s) => ({
     active: await s.getActiveWorkout(),
     templates: await s.listTemplates(),
@@ -45,6 +45,12 @@ export default function Today() {
     <Screen>
       <H1>{WEEKDAY_LONG[today]}</H1>
       <Banner message={msg} onDismiss={() => setMsg(null)} />
+      {!persistent ? (
+        <Card>
+          <H2>Not being saved</H2>
+          <Body>This browser is blocking storage, so entries disappear when the page closes. Export from Settings to keep them.</Body>
+        </Card>
+      ) : null}
 
       {active ? (
         <Card>

@@ -14,7 +14,7 @@ import { computeTrends, hasDisallowedLanguage } from '../src/domain/trends';
 import { toKg } from '../src/domain/units';
 import { validateLog, validateSet } from '../src/domain/validation';
 import { Store } from '../src/db/store';
-import { wrapSqlJs } from './sqljsDb';
+import { wrapSqlJs } from '../src/db/sqljsDb';
 
 async function freshStore() {
   const SQL = await initSqlJs();

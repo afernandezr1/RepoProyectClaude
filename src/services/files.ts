@@ -6,6 +6,7 @@ import { Platform } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import { Directory, File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import { IS_PAGE_BUILD } from '../db/expoDb';
 import { safeFilename, type ExportExtension } from '../domain/filenames';
 
 export const EXPORT_DIR_NAME = 'exports';
@@ -27,6 +28,10 @@ const MIME: Record<ExportExtension, string> = { json: 'application/json', csv: '
 
 export async function saveAndShare(base: string, ext: ExportExtension, content: string): Promise<SavedExport> {
   const filename = safeFilename(base, ext, new Date());
+  if (IS_PAGE_BUILD) {
+    await saveThroughClaude(filename, content);
+    return { filename, uri: null, shared: true };
+  }
   if (Platform.OS === 'web') {
     downloadOnWeb(filename, content, MIME[ext]);
     return { filename, uri: null, shared: true };
@@ -45,6 +50,25 @@ export async function saveAndShare(base: string, ext: ExportExtension, content: 
     }
   }
   return { filename, uri: file.uri, shared };
+}
+
+interface DownloadsNs {
+  save(req: { filename: string; data: string }): Promise<{ status: string }>;
+}
+
+/** Published Claude page: files are offered through the viewer's save prompt. */
+async function saveThroughClaude(filename: string, content: string): Promise<void> {
+  const claude = (globalThis as unknown as { claude?: { use(name: string): Promise<unknown> } }).claude;
+  const downloads = claude ? ((await claude.use('downloads')) as DownloadsNs | null) : null;
+  if (!downloads) throw new Error('Saving files is not available in this view. Open the page in claude.ai to export.');
+  try {
+    await downloads.save({ filename, data: content });
+  } catch (e) {
+    const code = (e as { code?: string })?.code;
+    if (code === 'declined') throw new Error('Save cancelled.');
+    if (code === 'rate_limited') throw new Error('Another save is waiting for confirmation. Try again in a moment.');
+    throw new Error('Saving files is not available in this view.');
+  }
 }
 
 function downloadOnWeb(filename: string, content: string, mime: string): void {

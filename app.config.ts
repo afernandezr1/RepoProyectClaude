@@ -9,9 +9,15 @@
 import type { ConfigContext, ExpoConfig } from 'expo/config';
 
 const HEALTH_ENABLED = process.env.EXPO_PUBLIC_HEALTH_ENABLED === 'true';
+/** Single-page browser build published as a Claude page (npm run build:page). */
+const PAGE_BUILD = process.env.EXPO_PUBLIC_TARGET === 'artifact';
 
 export default ({ config }: ConfigContext): ExpoConfig => {
-  const plugins: NonNullable<ExpoConfig['plugins']> = [...(config.plugins ?? [])];
+  let plugins: NonNullable<ExpoConfig['plugins']> = [...(config.plugins ?? [])];
+  if (PAGE_BUILD) {
+    // One bundle file: no lazily loaded route chunks, which a single page can't fetch.
+    plugins = plugins.map((p) => (p === 'expo-router' ? ['expo-router', { asyncRoutes: false }] : p));
+  }
   const android = { ...(config.android ?? {}) };
 
   if (HEALTH_ENABLED) {

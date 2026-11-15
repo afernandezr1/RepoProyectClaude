@@ -33,6 +33,8 @@ Then scan the QR code with Expo Go, or press `i` for the iOS simulator, `a` for 
 | `npm run check` | Typecheck, lint and tests |
 | `npm run build:dev:ios` / `npm run build:dev:android` | Local development build (`expo run:*`), needed only for health integration |
 | `npm run e2e:web` | Optional browser smoke test of the UI (see [Tests](#tests)) |
+| `npm run build:page` | Build the single-file browser version (see [Single-page browser version](#single-page-browser-version)) |
+| `npm run e2e:page` | Test that single-file page under a strict, embedded-page setup |
 
 ## Features
 
@@ -160,6 +162,22 @@ npm test
 - `e2e/web-happy-path.cjs` (optional, not part of `npm test`) drives the real UI in Chromium. It goes through welcome, the disclaimer, starting a template, completing a set with the rest timer, a validation error, finishing, history, patterns, adding a sleep log with validation, the JSON export download and full deletion. To run it, start `npm run web` in one terminal, then run `npm run e2e:web` in another. It needs the `playwright` package and a Chromium browser.
 
 Tests pin `TZ=UTC` (`test/setupTz.js`) so week boundaries are deterministic.
+
+## Single-page browser version
+
+`npm run build:page` produces `dist-page/steady-log.html`. This is the whole app in one self-contained HTML file. It's meant for hosts that serve a single page, such as a published Claude page.
+
+- **Storage:** SQLite runs in the page through sql.js's pure-JavaScript build. It needs no WebAssembly, no worker and no network. The database file is saved in that browser's IndexedDB shortly after each change. If the browser blocks storage, the app still runs, but it warns that nothing will be kept.
+- **Same app, few switches:** the build sets `EXPO_PUBLIC_TARGET=artifact`. That changes only three things:
+  - the storage adapter (`src/db/browserDb.ts`),
+  - exports, which go through the host's save prompt (`claude.use("downloads")`),
+  - the router, which is bundled as one file with no split screens.
+- **Confirmations:** they use an in-app dialog on all web builds, because embedded pages can't show `window.confirm`.
+- **Limitations:**
+  - data belongs to that one browser and isn't shared across devices,
+  - reminders, vibration and health import aren't available,
+  - export a JSON backup regularly.
+- **Test:** `npm run e2e:page` serves the file from a nested path with a strict content security policy (inline scripts only, no eval, no network). It runs the happy path with in-app confirmations and the save prompt, then reopens the page to check that data persisted.
 
 ## Troubleshooting
 

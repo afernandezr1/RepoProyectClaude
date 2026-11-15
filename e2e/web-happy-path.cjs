@@ -36,7 +36,7 @@ fs.mkdirSync(SP, { recursive: true });
       await p.locator('[data-testid^="done-"]').nth(1).click();
       await p.getByText('Weight must be a number.').waitFor();
     });
-    await step('finish -> success', async () => { await tid('finish-workout').click(); await p.getByText('Workout saved. Nice work showing up.').waitFor(); });
+    await step('finish -> success', async () => { await tid('finish-workout').click(); await tid('confirm-ok').click(); await p.getByText('Workout saved. Nice work showing up.').waitFor(); });
     await step('history list', async () => { await p.goto(BASE + '/history'); await p.getByText('Full Body A').first().waitFor(); await p.getByText(/1 sets/).waitFor(); });
     await step('patterns', async () => { await p.goto(BASE + '/trends'); await p.getByText('This week: 1 session').waitFor(); });
     await step('add sleep log', async () => {
@@ -58,6 +58,8 @@ fs.mkdirSync(SP, { recursive: true });
     });
     await step('delete everything', async () => {
       await tid('delete-all').click();
+      await tid('confirm-ok').click();
+      await tid('confirm-ok').click();
       await tid('accept-disclaimer').waitFor();
       await tid('accept-disclaimer').click();
       await p.getByText('Start a workout').waitFor();

@@ -9,6 +9,8 @@ interface AppState {
   store: Store;
   settings: Settings;
   dbPath: string;
+  /** False when data will not survive closing the app/page. */
+  persistent: boolean;
   /** Increments after every write so screens can reload. */
   version: number;
   bump: () => void;
@@ -20,7 +22,7 @@ const Ctx = createContext<AppState | null>(null);
 type Boot =
   | { status: 'loading' }
   | { status: 'error'; error: unknown }
-  | { status: 'ready'; store: Store; settings: Settings; dbPath: string };
+  | { status: 'ready'; store: Store; settings: Settings; dbPath: string; persistent: boolean };
 
 export function useBoot() {
   const [boot, setBoot] = useState<Boot>({ status: 'loading' });
@@ -29,12 +31,12 @@ export function useBoot() {
     let cancelled = false;
     (async () => {
       try {
-        const { db, path } = await openAppDatabase();
+        const { db, path, persistent } = await openAppDatabase();
         const store = new Store(db);
         await store.init();
         const settings = await store.getSettings();
         configureNotifications();
-        if (!cancelled) setBoot({ status: 'ready', store, settings, dbPath: path });
+        if (!cancelled) setBoot({ status: 'ready', store, settings, dbPath: path, persistent });
       } catch (error) {
         if (!cancelled) setBoot({ status: 'error', error });
       }
@@ -54,11 +56,13 @@ export function AppProvider({
   store,
   initialSettings,
   dbPath,
+  persistent,
   children,
 }: {
   store: Store;
   initialSettings: Settings;
   dbPath: string;
+  persistent: boolean;
   children: React.ReactNode;
 }) {
   const [settings, setSettings] = useState(initialSettings);
@@ -73,8 +77,8 @@ export function AppProvider({
     [store, bump],
   );
   const value = useMemo(
-    () => ({ store, settings, dbPath, version, bump, updateSettings }),
-    [store, settings, dbPath, version, bump, updateSettings],
+    () => ({ store, settings, dbPath, persistent, version, bump, updateSettings }),
+    [store, settings, dbPath, persistent, version, bump, updateSettings],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

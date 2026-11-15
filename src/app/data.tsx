@@ -13,7 +13,7 @@ import { useApp } from '../state/AppContext';
 type Busy = null | 'json' | 'csv' | 'restore' | 'delete';
 
 export default function DataScreen() {
-  const { store, dbPath, bump, updateSettings } = useApp();
+  const { store, dbPath, persistent, bump, updateSettings } = useApp();
   const [busy, setBusy] = useState<Busy>(null);
   const [msg, setMsg] = useState<BannerMessage | null>(null);
 
@@ -109,6 +109,9 @@ export default function DataScreen() {
   return (
     <Screen>
       <Banner message={msg} onDismiss={() => setMsg(null)} />
+      {!persistent ? (
+        <Banner message={{ kind: 'error', text: 'This browser is blocking storage. Data will be lost when the page closes; export before leaving.' }} onDismiss={() => undefined} />
+      ) : null}
       <Body>{PRIVACY_SUMMARY}</Body>
 
       <Card>
@@ -126,7 +129,13 @@ export default function DataScreen() {
 
       <Card>
         <H2>Where your data lives</H2>
-        <Muted>Database: {Platform.OS === 'web' ? 'browser storage (OPFS) for this site' : dbPath}</Muted>
+        <Muted>Database: {dbPath}</Muted>
+        {Platform.OS === 'web' ? (
+          <Muted>
+            In a browser, data belongs to this browser only. Clearing site data removes it, and other devices don’t see it.
+            Export a backup now and then.
+          </Muted>
+        ) : null}
         {dir ? <Muted>Exports: {dir}exports/</Muted> : null}
       </Card>
 

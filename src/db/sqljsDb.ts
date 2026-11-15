@@ -1,11 +1,16 @@
 /**
- * sql.js adapter: real SQLite (WASM) for Node tests. Not bundled into the app.
+ * sql.js adapter (SQLite compiled to JS/WASM). Used by the Node tests and by
+ * the browser-only build published as a Claude page. `onWrite` fires after
+ * every statement that may have changed data (once per outer transaction).
  */
 import type { Database } from 'sql.js';
-import type { Db, SqlParam } from '../src/db/types';
+import type { Db, SqlParam } from './types';
 
-export function wrapSqlJs(db: Database): Db {
+export function wrapSqlJs(db: Database, onWrite?: () => void): Db {
   let depth = 0;
+  const changed = () => {
+    if (depth === 0) onWrite?.();
+  };
   const all = <T,>(sql: string, params: SqlParam[] = []): T[] => {
     const stmt = db.prepare(sql);
     try {
@@ -20,9 +25,11 @@ export function wrapSqlJs(db: Database): Db {
   return {
     exec: async (sql) => {
       db.exec(sql);
+      changed();
     },
     run: async (sql, params = []) => {
       db.run(sql, params);
+      changed();
     },
     all: async (sql, params) => all(sql, params),
     get: async <T,>(sql: string, params?: SqlParam[]) => all<T>(sql, params)[0] ?? null,
@@ -42,6 +49,8 @@ export function wrapSqlJs(db: Database): Db {
       try {
         await fn();
         db.exec('COMMIT');
+        depth = 0;
+        changed();
       } catch (e) {
         db.exec('ROLLBACK');
         throw e;

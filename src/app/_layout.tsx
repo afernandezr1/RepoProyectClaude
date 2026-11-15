@@ -2,6 +2,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { ConfirmHost } from '../components/ConfirmHost';
 import { ErrorState, LoadingState, errorMessage } from '../components/states';
 import { useTheme } from '../components/theme';
 import { AppProvider, useBoot } from '../state/AppContext';
@@ -29,7 +30,7 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <AppProvider store={boot.store} initialSettings={boot.settings} dbPath={boot.dbPath}>
+      <AppProvider store={boot.store} initialSettings={boot.settings} dbPath={boot.dbPath} persistent={boot.persistent}>
         <StatusBar style="auto" />
         <Stack
           screenOptions={{
@@ -49,7 +50,9 @@ export default function RootLayout() {
           <Stack.Screen name="reminders" options={{ title: 'Reminders' }} />
           <Stack.Screen name="data" options={{ title: 'Your data' }} />
           <Stack.Screen name="about" options={{ title: 'About & safety' }} />
+          <Stack.Screen name="+not-found" options={{ headerShown: false }} />
         </Stack>
+        <ConfirmHost />
       </AppProvider>
     </SafeAreaProvider>
   );

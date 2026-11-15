@@ -47,7 +47,9 @@
     "build:dev:ios": "expo run:ios",
     "build:dev:android": "expo run:android",
     "e2e:web": "node e2e/web-happy-path.cjs",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "build:page": "node scripts/build-page.mjs",
+    "e2e:page": "node e2e/page-happy-path.cjs"
   },
   "private": true,
   "engines": {

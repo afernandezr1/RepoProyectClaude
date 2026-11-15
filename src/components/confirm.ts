@@ -1,10 +1,30 @@
 import { Alert, Platform } from 'react-native';
 
-/** Cross-platform confirmation dialog (Alert on native, window.confirm on web). */
+export interface ConfirmRequest {
+  title: string;
+  message: string;
+  confirmLabel: string;
+  destructive: boolean;
+  resolve: (ok: boolean) => void;
+}
+
+type Listener = (req: ConfirmRequest) => void;
+let listener: Listener | null = null;
+
+/** Registered by <ConfirmHost/>, which draws the dialog on web. */
+export function setConfirmListener(l: Listener | null): void {
+  listener = l;
+}
+
+/**
+ * Cross-platform confirmation. Native uses the system Alert. Web uses an
+ * in-app dialog (window.confirm is unavailable inside embedded pages such as a
+ * published Claude page, where it always returns false).
+ */
 export function confirm(title: string, message: string, confirmLabel = 'OK', destructive = false): Promise<boolean> {
   if (Platform.OS === 'web') {
-    const w = globalThis as unknown as { confirm?: (m: string) => boolean };
-    return Promise.resolve(w.confirm ? w.confirm(`${title}\n\n${message}`) : false);
+    if (!listener) return Promise.resolve(false);
+    return new Promise((resolve) => listener?.({ title, message, confirmLabel, destructive, resolve }));
   }
   return new Promise((resolve) => {
     Alert.alert(
