@@ -24,11 +24,11 @@ export default function TabsLayout() {
         tabBarStyle: { backgroundColor: t.card },
       }}
     >
-      <Tabs.Screen name="index" options={{ title: 'Today', tabBarIcon: icon('◎') }} />
-      <Tabs.Screen name="history" options={{ title: 'History', tabBarIcon: icon('☰') }} />
-      <Tabs.Screen name="trends" options={{ title: 'Patterns', tabBarIcon: icon('▤') }} />
-      <Tabs.Screen name="logs" options={{ title: 'Logs', tabBarIcon: icon('✎') }} />
-      <Tabs.Screen name="settings" options={{ title: 'Settings', tabBarIcon: icon('⚙') }} />
+      <Tabs.Screen name="index" options={{ title: 'Hoy', tabBarIcon: icon('◎') }} />
+      <Tabs.Screen name="history" options={{ title: 'Historial', tabBarIcon: icon('☰') }} />
+      <Tabs.Screen name="trends" options={{ title: 'Patrones', tabBarIcon: icon('▤') }} />
+      <Tabs.Screen name="logs" options={{ title: 'Registros', tabBarIcon: icon('✎') }} />
+      <Tabs.Screen name="settings" options={{ title: 'Ajustes', tabBarIcon: icon('⚙') }} />
     </Tabs>
   );
 }

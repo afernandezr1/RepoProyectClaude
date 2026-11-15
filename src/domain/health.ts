@@ -46,7 +46,7 @@ export function sleepSegmentsToLogs(segments: Interval[], prefix: string): Impor
       kind: 'sleep',
       value: Math.round(Math.min(total, 24 * 60)),
       unit: 'min',
-      text: 'Imported from health app',
+      text: 'Importado de la app de salud',
       loggedAt: last.end.toISOString(),
     });
   }
@@ -76,7 +76,7 @@ export function sessionsToLogs(
       kind: 'activity' as const,
       value: Math.round(Math.min(minutes(s), 24 * 60)),
       unit: 'min' as const,
-      text: s.title ? `${s.title} (imported)` : 'Workout (imported)',
+      text: s.title ? `${s.title} (importado)` : 'Entrenamiento (importado)',
       loggedAt: s.start.toISOString(),
     }));
 }

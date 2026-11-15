@@ -25,6 +25,12 @@ import type { Db, SqlParam } from './types';
 
 type Row = Record<string, SqlParam>;
 
+/** Names the starter templates had before the app was translated. */
+const LEGACY_TEMPLATE_NAMES: [string, string][] = [
+  ['tpl-full-a', 'Full Body A'],
+  ['tpl-full-b', 'Full Body B'],
+];
+
 const mapExercise = (r: Row): Exercise => ({
   id: String(r.id),
   name: String(r.name),
@@ -137,10 +143,19 @@ export class Store {
     const ts = now.toISOString();
     await this.db.transaction(async () => {
       for (const e of BUILTIN_EXERCISES) {
+        // Upsert so built-in names follow the app's language (user exercises are never touched).
         await this.db.run(
-          'INSERT OR IGNORE INTO exercises (id, name, kind, builtin, created_at) VALUES (?, ?, ?, 1, ?)',
+          `INSERT INTO exercises (id, name, kind, builtin, created_at) VALUES (?, ?, ?, 1, ?)
+           ON CONFLICT(id) DO UPDATE SET name = excluded.name WHERE exercises.builtin = 1`,
           [e.id, e.name, e.kind, ts],
         );
+      }
+      // Starter templates created by the English version: rename only if still untouched.
+      for (const [id, oldName] of LEGACY_TEMPLATE_NAMES) {
+        const t = STARTER_TEMPLATES.find((x) => x.id === id);
+        if (t) {
+          await this.db.run('UPDATE templates SET name = ?, notes = ? WHERE id = ? AND name = ?', [t.name, t.notes, id, oldName]);
+        }
       }
       if (seeded) return;
       for (const t of STARTER_TEMPLATES) {
@@ -323,7 +338,7 @@ export class Store {
       await this.db.run('INSERT INTO workouts (id, template_id, name, started_at, ended_at, notes) VALUES (?, ?, ?, ?, NULL, ?)', [
         id,
         template?.id ?? null,
-        template?.name ?? 'Workout',
+        template?.name ?? 'Entrenamiento',
         now.toISOString(),
         '',
       ]);

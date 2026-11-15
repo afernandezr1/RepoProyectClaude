@@ -52,7 +52,7 @@ function idbPut(idb: IDBDatabase, bytes: Uint8Array): Promise<void> {
 
 export async function openBrowserDatabase(): Promise<BrowserDatabase> {
   const init = (globalThis as unknown as { initSqlJs?: () => Promise<SqlJsStatic> }).initSqlJs;
-  if (!init) throw new Error('The SQLite engine did not load in this page.');
+  if (!init) throw new Error('El motor SQLite no se cargó en esta página.');
   const SQL = await init();
 
   let idb: IDBDatabase | null = null;
@@ -95,7 +95,7 @@ export async function openBrowserDatabase(): Promise<BrowserDatabase> {
     db: wrapSqlJs(raw, schedule),
     persistent: idb !== null,
     label: idb
-      ? 'this browser (IndexedDB), only for this page'
-      : 'memory only — this browser is blocking storage, so data is lost when the page closes',
+      ? 'este navegador (IndexedDB), solo para esta página'
+      : 'solo en memoria: este navegador bloquea el almacenamiento, así que los datos se pierden al cerrar la página',
   };
 }

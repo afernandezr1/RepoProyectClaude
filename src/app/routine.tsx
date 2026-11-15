@@ -26,15 +26,15 @@ export default function Routine() {
       await store.saveRoutineDay(day);
       bump();
     } catch (e) {
-      setMsg({ kind: 'error', text: `Couldn't save: ${errorMessage(e)}` });
+      setMsg({ kind: 'error', text: `No se pudo guardar: ${errorMessage(e)}` });
     }
   };
 
   return (
     <Screen>
       <Muted>
-        Plan a moderate week that fits your life. Nothing here is enforced — the plan is a guide, and changing it any time is
-        normal.
+        Planifica una semana moderada que encaje con tu vida. Nada aquí es obligatorio: el plan es una guía, y cambiarlo cuando
+        quieras es normal.
       </Muted>
       <Banner message={msg} onDismiss={() => setMsg(null)} />
       {routineSuggestions(routine).map((s) => (
@@ -47,18 +47,18 @@ export default function Routine() {
             value={d.kind}
             onChange={(kind) => save({ ...d, kind, templateId: kind === 'workout' ? d.templateId : null })}
             options={[
-              { value: 'workout', label: 'Workout' },
-              { value: 'rest', label: 'Rest' },
-              { value: 'open', label: 'Open' },
+              { value: 'workout', label: 'Entreno' },
+              { value: 'rest', label: 'Descanso' },
+              { value: 'open', label: 'Libre' },
             ]}
           />
           {d.kind === 'workout' && templates.length > 0 ? (
             <Row>
-              <Muted>Template:</Muted>
+              <Muted>Plantilla:</Muted>
               <Button
                 small
                 kind={d.templateId === null ? 'primary' : 'secondary'}
-                title="Any"
+                title="Cualquiera"
                 onPress={() => save({ ...d, templateId: null })}
               />
               {templates.map((t) => (

@@ -22,30 +22,30 @@ fs.mkdirSync(SP, { recursive: true });
   const tid = (id) => p.locator(`[data-testid="${id}"]`);
   await p.goto(BASE + '/', { waitUntil: 'networkidle', timeout: 120000 });
   try {
-    await step('welcome + disclaimer', async () => { await tid('accept-disclaimer').click(); await p.getByText('Start a workout').waitFor(); });
-    await step('start template', async () => { await tid('start-tpl-full-a').click(); await p.getByText('Goblet Squat').first().waitFor(); });
+    await step('welcome + disclaimer', async () => { await tid('accept-disclaimer').click(); await p.getByText('Empezar un entrenamiento').waitFor(); });
+    await step('start template', async () => { await tid('start-tpl-full-a').click(); await p.getByText('Sentadilla goblet').first().waitFor(); });
     await step('complete a set + rest timer', async () => {
       const w = p.locator('[data-testid^="weight-"]').first();
       await w.fill('20');
       await p.locator('[data-testid^="done-"]').first().click();
-      await p.getByText(/^Rest \d+:\d\d$/).waitFor();
+      await p.getByText(/^Descanso \d+:\d\d$/).waitFor();
     });
     await step('validation error on empty set', async () => {
       const reps = p.locator('[data-testid^="reps-"]').nth(1); await reps.fill('');
       await p.locator('[data-testid^="weight-"]').nth(1).fill('abc');
       await p.locator('[data-testid^="done-"]').nth(1).click();
-      await p.getByText('Weight must be a number.').waitFor();
+      await p.getByText('Peso: tiene que ser un número.').waitFor();
     });
-    await step('finish -> success', async () => { await tid('finish-workout').click(); await tid('confirm-ok').click(); await p.getByText('Workout saved. Nice work showing up.').waitFor(); });
-    await step('history list', async () => { await p.goto(BASE + '/history'); await p.getByText('Full Body A').first().waitFor(); await p.getByText(/1 sets/).waitFor(); });
-    await step('patterns', async () => { await p.goto(BASE + '/trends'); await p.getByText('This week: 1 session').waitFor(); });
+    await step('finish -> success', async () => { await tid('finish-workout').click(); await tid('confirm-ok').click(); await p.getByText('Entrenamiento guardado. ¡Bien hecho!').waitFor(); });
+    await step('history list', async () => { await p.goto(BASE + '/history'); await p.getByText('Cuerpo completo A').first().waitFor(); await p.getByText(/1 series/).waitFor(); });
+    await step('patterns', async () => { await p.goto(BASE + '/trends'); await p.getByText('Esta semana: 1 sesión').waitFor(); });
     await step('add sleep log', async () => {
       await p.goto(BASE + '/logs'); await tid('add-log').click();
       await tid('log-kind-sleep').click();
       await tid('log-value').fill('30'); await tid('save-log').click();
-      await p.getByText('A single entry can be at most 24 hours.').waitFor();
+      await p.getByText('Una entrada puede durar como máximo 24 horas.').waitFor();
       await tid('log-value').fill('7.5'); await tid('save-log').click();
-      await p.getByText('7.5 h').waitFor();
+      await p.getByText('7,5 h').waitFor();
     });
     await step('export json', async () => {
       await p.goto(BASE + '/data');
@@ -54,7 +54,7 @@ fs.mkdirSync(SP, { recursive: true });
       const path = `${SP}/${name}`; await dl.saveAs(path);
       const j = JSON.parse(fs.readFileSync(path, 'utf8'));
       if (j.format !== 'steady-log-backup' || j.workouts.length !== 1 || j.logs.length !== 1) throw new Error('bad export');
-      await p.getByText(/Downloaded steady-log-backup-/).waitFor();
+      await p.getByText(/Descargado steady-log-backup-/).waitFor();
     });
     await step('delete everything', async () => {
       await tid('delete-all').click();
@@ -62,8 +62,8 @@ fs.mkdirSync(SP, { recursive: true });
       await tid('confirm-ok').click();
       await tid('accept-disclaimer').waitFor();
       await tid('accept-disclaimer').click();
-      await p.getByText('Start a workout').waitFor();
-      await p.goto(BASE + '/history'); await p.getByText('No workouts logged yet').waitFor();
+      await p.getByText('Empezar un entrenamiento').waitFor();
+      await p.goto(BASE + '/history'); await p.getByText('Aún no has registrado entrenamientos').waitFor();
     });
   } catch (e) {
     process.exitCode = 1;

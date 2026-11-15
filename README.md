@@ -2,6 +2,8 @@
 
 A personal, local-first workout and wellbeing log, meant as a replacement for Strong Pro. You can log workouts from templates with sets and rest timers, plan a moderate week with rest days, keep optional logs of activity, sleep, mood, energy and notes, and see weekly patterns described in neutral language.
 
+The app's interface is in **Spanish**.
+
 Built with **React Native + Expo (SDK 58) + TypeScript + SQLite**. Apple Health / Health Connect support is included but **off unless you enable it**.
 
 > **Not medical care.** Steady Log is a personal logbook. It does not diagnose, treat or monitor any condition, and it does not replace advice from a doctor, physiotherapist or other qualified professional. If you have health concerns, pain, or questions about what exercise is right for you, talk to a qualified professional. The app shows this statement on first run and on the *About & safety* screen.

@@ -21,7 +21,7 @@ export function setConfirmListener(l: Listener | null): void {
  * in-app dialog (window.confirm is unavailable inside embedded pages such as a
  * published Claude page, where it always returns false).
  */
-export function confirm(title: string, message: string, confirmLabel = 'OK', destructive = false): Promise<boolean> {
+export function confirm(title: string, message: string, confirmLabel = 'Aceptar', destructive = false): Promise<boolean> {
   if (Platform.OS === 'web') {
     if (!listener) return Promise.resolve(false);
     return new Promise((resolve) => listener?.({ title, message, confirmLabel, destructive, resolve }));
@@ -31,7 +31,7 @@ export function confirm(title: string, message: string, confirmLabel = 'OK', des
       title,
       message,
       [
-        { text: 'Cancel', style: 'cancel', onPress: () => resolve(false) },
+        { text: 'Cancelar', style: 'cancel', onPress: () => resolve(false) },
         { text: confirmLabel, style: destructive ? 'destructive' : 'default', onPress: () => resolve(true) },
       ],
       { cancelable: true, onDismiss: () => resolve(false) },

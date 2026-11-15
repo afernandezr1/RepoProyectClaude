@@ -6,10 +6,10 @@ import { space, useTheme } from './theme';
 import { Button, Card, Field, Muted, Segmented } from './ui';
 
 const KIND_OPTIONS: { value: ExerciseKind; label: string }[] = [
-  { value: 'weight_reps', label: 'Weight' },
+  { value: 'weight_reps', label: 'Peso' },
   { value: 'reps', label: 'Reps' },
-  { value: 'duration', label: 'Time' },
-  { value: 'distance', label: 'Distance' },
+  { value: 'duration', label: 'Tiempo' },
+  { value: 'distance', label: 'Distancia' },
 ];
 
 export function ExercisePicker({
@@ -35,7 +35,7 @@ export function ExercisePicker({
   const exact = exercises.some((e) => e.name.toLowerCase() === q.trim().toLowerCase());
 
   const create = async () => {
-    const v = validateName(q, 'Exercise name');
+    const v = validateName(q, 'Nombre del ejercicio');
     if (!v.ok) return setError(v.error);
     setBusy(true);
     try {
@@ -43,7 +43,7 @@ export function ExercisePicker({
       setQ('');
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Could not create the exercise.');
+      setError(e instanceof Error ? e.message : 'No se pudo crear el ejercicio.');
     } finally {
       setBusy(false);
     }
@@ -51,28 +51,28 @@ export function ExercisePicker({
 
   return (
     <Card>
-      <Field label="Find or name an exercise" value={q} onChangeText={setQ} error={error} maxLength={80} />
+      <Field label="Busca o escribe un ejercicio" value={q} onChangeText={setQ} error={error} maxLength={80} />
       <View style={{ maxHeight: 280 }}>
         {filtered.slice(0, 30).map((e) => (
           <Pressable
             key={e.id}
             accessibilityRole="button"
-            accessibilityLabel={`Add ${e.name}`}
+            accessibilityLabel={`Añadir ${e.name}`}
             onPress={() => onPick(e)}
             style={{ paddingVertical: space.sm }}
           >
             <Text style={{ color: t.text, fontSize: 16 }}>{e.name}</Text>
           </Pressable>
         ))}
-        {filtered.length === 0 ? <Muted>No matching exercises.</Muted> : null}
+        {filtered.length === 0 ? <Muted>No hay ejercicios que coincidan.</Muted> : null}
       </View>
       {q.trim() && !exact ? (
         <>
-          <Segmented label="Track by" options={KIND_OPTIONS} value={kind} onChange={setKind} />
-          <Button title={`Create “${q.trim()}”`} kind="secondary" onPress={create} busy={busy} />
+          <Segmented label="Registrar por" options={KIND_OPTIONS} value={kind} onChange={setKind} />
+          <Button title={`Crear «${q.trim()}»`} kind="secondary" onPress={create} busy={busy} />
         </>
       ) : null}
-      <Button title="Cancel" kind="ghost" small onPress={onCancel} />
+      <Button title="Cancelar" kind="ghost" small onPress={onCancel} />
     </Card>
   );
 }

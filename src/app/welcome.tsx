@@ -16,7 +16,7 @@ export default function Welcome() {
       await updateSettings({ disclaimerAcknowledged: true });
       router.replace('/');
     } catch (e) {
-      setMsg({ kind: 'error', text: `Couldn't save: ${errorMessage(e)}` });
+      setMsg({ kind: 'error', text: `No se pudo guardar: ${errorMessage(e)}` });
     } finally {
       setBusy(false);
     }
@@ -24,21 +24,21 @@ export default function Welcome() {
 
   return (
     <Screen>
-      <H1>Welcome to {APP_NAME}</H1>
-      <Body>A calm place to log workouts, rest, and how you feel — at your own pace.</Body>
+      <H1>Te damos la bienvenida a {APP_NAME}</H1>
+      <Body>Un lugar tranquilo para registrar entrenamientos, descanso y cómo te sientes, a tu ritmo.</Body>
       <Card>
-        <H2>Not medical care</H2>
+        <H2>No es atención médica</H2>
         <Body>{MEDICAL_DISCLAIMER}</Body>
       </Card>
       <Card>
-        <H2>Your data stays here</H2>
+        <H2>Tus datos se quedan aquí</H2>
         <Body>{PRIVACY_SUMMARY}</Body>
       </Card>
       <Muted>
-        There are no goals to hit and nothing to keep up with. Rest days count, and skipping a day is just a day.
+        No hay metas que cumplir ni nada que mantener. Los días de descanso cuentan, y saltarte un día es solo un día.
       </Muted>
       <Banner message={msg} onDismiss={() => setMsg(null)} />
-      <Button testID="accept-disclaimer" title="I understand — get started" onPress={accept} busy={busy} />
+      <Button testID="accept-disclaimer" title="Entendido, empezar" onPress={accept} busy={busy} />
     </Screen>
   );
 }

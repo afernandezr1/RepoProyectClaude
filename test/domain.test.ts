@@ -128,13 +128,13 @@ describe('backup format', () => {
   });
 
   it('rejects files that are not backups or are inconsistent, with a readable error', () => {
-    expect(parseBackup('{oops')).toEqual({ ok: false, error: "That file isn't valid JSON." });
+    expect(parseBackup('{oops')).toEqual({ ok: false, error: 'Ese archivo no es un JSON válido.' });
     expect(parseBackup('{"format":"other"}').ok).toBe(false);
     const orphan = buildBackup({ ...content, workouts: [] }, new Date());
     const r = parseBackup(JSON.stringify(orphan));
     expect(r.ok).toBe(false);
     const future = { ...buildBackup(content, new Date()), version: 99 };
-    expect(parseBackup(JSON.stringify(future))).toEqual({ ok: false, error: 'This backup was made by a newer version of the app.' });
+    expect(parseBackup(JSON.stringify(future))).toEqual({ ok: false, error: 'Esta copia de seguridad se hizo con una versión más nueva de la app.' });
   });
 
   it('writes CSV in display units and neutralises formula injection', () => {
@@ -164,6 +164,6 @@ describe('health sample shaping', () => {
   });
   it('turns workout sessions into activity minutes with stable ids', () => {
     const [l] = sessionsToLogs([{ id: 'abc', title: 'Walk', start: new Date('2025-11-11T10:00:00Z'), end: new Date('2025-11-11T10:45:00Z') }], 'hc');
-    expect(l).toMatchObject({ externalId: 'hc-workout-abc', kind: 'activity', value: 45, unit: 'min', text: 'Walk (imported)' });
+    expect(l).toMatchObject({ externalId: 'hc-workout-abc', kind: 'activity', value: 45, unit: 'min', text: 'Walk (importado)' });
   });
 });

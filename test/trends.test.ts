@@ -143,13 +143,15 @@ describe('computeTrends', () => {
       weeks: 4,
     });
     expect(t.observations.length).toBeGreaterThan(0);
-    expect(t.observations.join(' ')).toContain('Rest days are part of the plan');
-    expect(t.observations).toContain('Sessions most often land on Monday.');
+    expect(t.observations.join(' ')).toContain('Los días de descanso son parte del plan');
+    expect(t.observations).toContain('El día con más sesiones: lunes.');
     expect(hasDisallowedLanguage(t.observations)).toBeNull();
   });
 
   it('flags judgmental language in the guard rail helper', () => {
     expect(hasDisallowedLanguage(['You missed 2 workouts'])).toBe('missed');
+    expect(hasDisallowedLanguage(['Deberías entrenar más'])).toBe('deberías');
+    expect(hasDisallowedLanguage(['3 sesiones esta semana'])).toBeNull();
     expect(hasDisallowedLanguage(['3 sessions this week'])).toBeNull();
   });
 

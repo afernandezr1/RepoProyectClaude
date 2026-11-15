@@ -74,46 +74,46 @@ const server = http.createServer((req, res) => {
     await p.goto(BASE, { waitUntil: 'load' });
     await step('welcome + disclaimer', async () => {
       await tid('accept-disclaimer').click();
-      await p.getByText('Start a workout').waitFor();
+      await p.getByText('Empezar un entrenamiento').waitFor();
     });
     await step('start template + set + rest timer', async () => {
       await tid('start-tpl-full-a').click();
       await p.locator('[data-testid^="weight-"]').first().fill('20');
       await p.locator('[data-testid^="done-"]').first().click();
-      await p.getByText(/^Rest \d+:\d\d$/).waitFor();
+      await p.getByText(/^Descanso \d+:\d\d$/).waitFor();
     });
     await step('finish with in-app confirm', async () => {
       await tid('finish-workout').click();
       await tid('confirm-ok').click();
-      await p.getByText('Workout saved. Nice work showing up.').waitFor();
+      await p.getByText('Entrenamiento guardado. ¡Bien hecho!').waitFor();
     });
     await step('history + patterns via tabs', async () => {
       await p.goBack().catch(() => undefined);
-      await nav('History');
-      await p.getByText(/1 sets/).first().waitFor();
-      await nav('Patterns');
-      await p.getByText('This week: 1 session').first().waitFor();
+      await nav('Historial');
+      await p.getByText(/1 series/).first().waitFor();
+      await nav('Patrones');
+      await p.getByText('Esta semana: 1 sesión').first().waitFor();
     });
     await step('add sleep log', async () => {
-      await nav('Logs');
+      await nav('Registros');
       await tid('add-log').click();
       await tid('log-kind-sleep').click();
       await tid('log-value').fill('7.5');
       await tid('save-log').click();
-      await p.getByText('7.5 h').first().waitFor();
+      await p.getByText('7,5 h').first().waitFor();
     });
     await step('data persists after reopening the page', async () => {
       await p.waitForTimeout(800); // debounce for the IndexedDB save
       await p.goto(BASE, { waitUntil: 'load' }); // the host reopens the page from its own address
-      await p.getByText('Start a workout').waitFor(); // disclaimer remembered
-      await nav('History');
-      await p.getByText(/1 sets/).first().waitFor();
+      await p.getByText('Empezar un entrenamiento').waitFor(); // disclaimer remembered
+      await nav('Historial');
+      await p.getByText(/1 series/).first().waitFor();
     });
     await step('export via Claude save prompt', async () => {
-      await nav('Settings');
-      await p.getByText('Export, restore or delete data').click();
+      await nav('Ajustes');
+      await p.getByText('Exportar, restaurar o borrar datos').click();
       await tid('export-json').click();
-      await p.getByText(/Downloaded steady-log-backup-/).waitFor();
+      await p.getByText(/Descargado steady-log-backup-/).waitFor();
       const saved = await p.evaluate(() => window.__saved);
       const j = JSON.parse(saved[0].data);
       if (j.workouts.length !== 1 || j.logs.length !== 1) throw new Error('unexpected export contents');

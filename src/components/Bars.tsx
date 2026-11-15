@@ -16,7 +16,7 @@ export function Bars({
 }) {
   const t = useTheme();
   const max = Math.max(0, ...data.map((d) => d.value ?? 0));
-  const summary = data.map((d) => `${d.label}: ${d.value == null ? 'no entries' : format(d.value)}`).join(', ');
+  const summary = data.map((d) => `${d.label}: ${d.value == null ? 'sin entradas' : format(d.value)}`).join(', ');
   return (
     <View accessible accessibilityLabel={`${label}. ${summary}`}>
       <View style={[styles.row, { height }]}>

@@ -24,30 +24,30 @@ export default function Logs() {
   const { state, retry } = useLoad((s) => s.listLogs(1000));
 
   const remove = async (l: LogEntry) => {
-    if (!(await confirm('Delete entry?', describe(l) || LOG_KIND_LABEL[l.kind], 'Delete', true))) return;
+    if (!(await confirm('¿Eliminar la entrada?', describe(l) || LOG_KIND_LABEL[l.kind], 'Eliminar', true))) return;
     try {
       await store.deleteLog(l.id);
       bump();
-      setMsg({ kind: 'success', text: 'Entry deleted.' });
+      setMsg({ kind: 'success', text: 'Entrada eliminada.' });
     } catch (e) {
-      setMsg({ kind: 'error', text: `Couldn't delete: ${errorMessage(e)}` });
+      setMsg({ kind: 'error', text: `No se pudo eliminar: ${errorMessage(e)}` });
     }
   };
 
   const header = (
     <>
-      <Muted>All logs are optional. Track only what feels useful.</Muted>
-      <Button testID="add-log" title="+ New entry" onPress={() => router.push('/log-new')} />
+      <Muted>Todos los registros son opcionales. Apunta solo lo que te resulte útil.</Muted>
+      <Button testID="add-log" title="+ Nueva entrada" onPress={() => router.push('/log-new')} />
       <Segmented
         value={filter}
         onChange={setFilter}
         options={[
-          { value: 'all', label: 'All' },
-          { value: 'activity', label: 'Activity' },
-          { value: 'sleep', label: 'Sleep' },
-          { value: 'mood', label: 'Mood' },
-          { value: 'energy', label: 'Energy' },
-          { value: 'note', label: 'Notes' },
+          { value: 'all', label: 'Todo' },
+          { value: 'activity', label: 'Actividad' },
+          { value: 'sleep', label: 'Sueño' },
+          { value: 'mood', label: 'Ánimo' },
+          { value: 'energy', label: 'Energía' },
+          { value: 'note', label: 'Notas' },
         ]}
       />
       <Banner message={msg} onDismiss={() => setMsg(null)} />
@@ -69,8 +69,8 @@ export default function Logs() {
       {header}
       {items.length === 0 ? (
         <EmptyState
-          title={filter === 'all' ? 'No entries yet' : `No ${LOG_KIND_LABEL[filter].toLowerCase()} entries`}
-          body="Activity, sleep, mood, energy and personal notes can be logged here whenever you like."
+          title={filter === 'all' ? 'Aún no hay entradas' : `No hay entradas de ${LOG_KIND_LABEL[filter].toLowerCase()}`}
+          body="Aquí puedes registrar actividad, sueño, ánimo, energía y notas personales cuando quieras."
         />
       ) : (
         items.map((l) => (
@@ -78,9 +78,9 @@ export default function Logs() {
             <Row style={{ justifyContent: 'space-between' }}>
               <Body style={{ fontWeight: '600' }}>
                 {LOG_KIND_LABEL[l.kind]}
-                {l.source === 'health' ? ' · imported' : ''}
+                {l.source === 'health' ? ' · importado' : ''}
               </Body>
-              <Button small kind="ghost" title="Delete" onPress={() => remove(l)} accessibilityLabel={`Delete ${LOG_KIND_LABEL[l.kind]} entry`} />
+              <Button small kind="ghost" title="Eliminar" onPress={() => remove(l)} accessibilityLabel={`Eliminar entrada de ${LOG_KIND_LABEL[l.kind]}`} />
             </Row>
             {describe(l) ? <Body>{describe(l)}</Body> : null}
             <Muted>{formatDateTime(l.loggedAt)}</Muted>

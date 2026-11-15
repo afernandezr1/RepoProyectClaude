@@ -6,19 +6,19 @@ export default function About() {
   return (
     <Screen>
       <Card>
-        <H2>Not medical care</H2>
+        <H2>No es atención médica</H2>
         <Body>{MEDICAL_DISCLAIMER}</Body>
-        <Body>If something hurts, feels wrong, or you feel unwell during exercise, stop and seek qualified help.</Body>
+        <Body>Si algo duele, no se siente bien o te encuentras mal durante el ejercicio, para y busca ayuda cualificada.</Body>
       </Card>
       <Card>
-        <H2>What {APP_NAME} does not do</H2>
-        <Muted>• No diagnosis, treatment, or health scores.</Muted>
-        <Muted>• No weight-loss targets, calorie counting, or diet coaching.</Muted>
-        <Muted>• No streak penalties, leaderboards, or comparisons with other people.</Muted>
-        <Muted>• No accounts, ads, analytics, or cloud servers.</Muted>
+        <H2>Lo que {APP_NAME} no hace</H2>
+        <Muted>• No hace diagnósticos, tratamientos ni puntuaciones de salud.</Muted>
+        <Muted>• No pone objetivos de pérdida de peso, ni cuenta calorías, ni da consejos de dieta.</Muted>
+        <Muted>• No castiga por romper rachas, no tiene clasificaciones ni te compara con otras personas.</Muted>
+        <Muted>• No tiene cuentas, anuncios, analíticas ni servidores en la nube.</Muted>
       </Card>
       <Card>
-        <H2>Privacy</H2>
+        <H2>Privacidad</H2>
         <Body>{PRIVACY_SUMMARY}</Body>
       </Card>
     </Screen>

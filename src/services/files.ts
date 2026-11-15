@@ -43,7 +43,7 @@ export async function saveAndShare(base: string, ext: ExportExtension, content: 
   let shared = false;
   if (await Sharing.isAvailableAsync()) {
     try {
-      await Sharing.shareAsync(file.uri, { mimeType: MIME[ext], dialogTitle: 'Save or send your export' });
+      await Sharing.shareAsync(file.uri, { mimeType: MIME[ext], dialogTitle: 'Guarda o envía tu exportación' });
       shared = true;
     } catch {
       shared = false; // user dismissed or share target failed; file is still saved locally
@@ -60,14 +60,14 @@ interface DownloadsNs {
 async function saveThroughClaude(filename: string, content: string): Promise<void> {
   const claude = (globalThis as unknown as { claude?: { use(name: string): Promise<unknown> } }).claude;
   const downloads = claude ? ((await claude.use('downloads')) as DownloadsNs | null) : null;
-  if (!downloads) throw new Error('Saving files is not available in this view. Open the page in claude.ai to export.');
+  if (!downloads) throw new Error('Guardar archivos no está disponible en esta vista. Abre la página en claude.ai para exportar.');
   try {
     await downloads.save({ filename, data: content });
   } catch (e) {
     const code = (e as { code?: string })?.code;
-    if (code === 'declined') throw new Error('Save cancelled.');
-    if (code === 'rate_limited') throw new Error('Another save is waiting for confirmation. Try again in a moment.');
-    throw new Error('Saving files is not available in this view.');
+    if (code === 'declined') throw new Error('Guardado cancelado.');
+    if (code === 'rate_limited') throw new Error('Hay otro guardado esperando confirmación. Inténtalo de nuevo en un momento.');
+    throw new Error('Guardar archivos no está disponible en esta vista.');
   }
 }
 
@@ -77,7 +77,7 @@ function downloadOnWeb(filename: string, content: string, mime: string): void {
     URL?: { createObjectURL(b: unknown): string; revokeObjectURL(u: string): void };
     Blob?: new (parts: string[], opts: { type: string }) => unknown;
   };
-  if (!g.document || !g.URL || !g.Blob) throw new Error('Downloads are not supported in this browser.');
+  if (!g.document || !g.URL || !g.Blob) throw new Error('Este navegador no admite descargas.');
   const url = g.URL.createObjectURL(new g.Blob([content], { type: mime }));
   const a = g.document.createElement('a');
   a.href = url;

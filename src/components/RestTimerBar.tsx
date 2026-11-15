@@ -53,12 +53,12 @@ export function RestTimerBar({
   return (
     <View
       style={[styles.bar, { backgroundColor: t.card, borderColor: t.border }]}
-      accessibilityLabel={done ? 'Rest finished' : `Rest timer, ${formatSeconds(remainingMs(timer, now) / 1000)} remaining`}
+      accessibilityLabel={done ? 'Descanso terminado' : `Temporizador de descanso, quedan ${formatSeconds(remainingMs(timer, now) / 1000)}`}
       accessibilityLiveRegion="polite"
     >
       <Row style={{ justifyContent: 'space-between' }}>
         <Text style={[styles.time, { color: t.text }]}>
-          {done ? 'Rest done' : `Rest ${formatSeconds(remainingMs(timer, now) / 1000)}`}
+          {done ? 'Descanso terminado' : `Descanso ${formatSeconds(remainingMs(timer, now) / 1000)}`}
         </Text>
         <Row>
           {!done ? (
@@ -68,12 +68,12 @@ export function RestTimerBar({
               <Button
                 small
                 kind="secondary"
-                title={running ? 'Pause' : 'Resume'}
+                title={running ? 'Pausar' : 'Seguir'}
                 onPress={() => onChange(running ? pauseTimer(timer, Date.now()) : resumeTimer(timer, Date.now()))}
               />
             </>
           ) : null}
-          <Button small kind={done ? 'primary' : 'ghost'} title={done ? 'OK' : 'Skip'} onPress={onDismiss} />
+          <Button small kind={done ? 'primary' : 'ghost'} title={done ? 'Vale' : 'Saltar'} onPress={onDismiss} />
         </Row>
       </Row>
       <View style={[styles.track, { backgroundColor: t.barMuted }]}>

@@ -39,22 +39,22 @@ function optionalNumber(
 ): Result<number | null> {
   const n = parseNumberInput(raw);
   if (n === null) return ok(null);
-  if (Number.isNaN(n)) return err(`${label} must be a number.`);
-  if (integer && !Number.isInteger(n)) return err(`${label} must be a whole number.`);
-  if (n < min || n > max) return err(`${label} must be between ${min} and ${max}.`);
+  if (Number.isNaN(n)) return err(`${label}: tiene que ser un número.`);
+  if (integer && !Number.isInteger(n)) return err(`${label}: tiene que ser un número entero.`);
+  if (n < min || n > max) return err(`${label}: tiene que estar entre ${min} y ${max}.`);
   return ok(n);
 }
 
-export function validateName(raw: string, label = 'Name'): Result<string> {
+export function validateName(raw: string, label = 'Nombre'): Result<string> {
   const t = raw.trim().replace(/\s+/g, ' ');
-  if (t.length === 0) return err(`${label} can't be empty.`);
-  if (t.length > LIMITS.nameMax) return err(`${label} must be ${LIMITS.nameMax} characters or fewer.`);
+  if (t.length === 0) return err(`${label}: no puede estar vacío.`);
+  if (t.length > LIMITS.nameMax) return err(`${label}: máximo ${LIMITS.nameMax} caracteres.`);
   return ok(t);
 }
 
-export function validateText(raw: string, label = 'Text'): Result<string> {
+export function validateText(raw: string, label = 'Texto'): Result<string> {
   const t = raw.trim();
-  if (t.length > LIMITS.textMax) return err(`${label} must be ${LIMITS.textMax} characters or fewer.`);
+  if (t.length > LIMITS.textMax) return err(`${label}: máximo ${LIMITS.textMax} caracteres.`);
   return ok(t);
 }
 
@@ -76,17 +76,17 @@ export interface ParsedSet {
 
 /** Validate a set row. At least one measure must be present to mark it done. */
 export function validateSet(input: SetInput, requireValue: boolean): Result<ParsedSet> {
-  const weight = optionalNumber(input.weight, 'Weight', { min: 0, max: LIMITS.weightKgMax * 2.3 });
+  const weight = optionalNumber(input.weight, 'Peso', { min: 0, max: LIMITS.weightKgMax * 2.3 });
   if (!weight.ok) return weight;
-  const reps = optionalNumber(input.reps, 'Reps', { min: 0, max: LIMITS.repsMax, integer: true });
+  const reps = optionalNumber(input.reps, 'Repeticiones', { min: 0, max: LIMITS.repsMax, integer: true });
   if (!reps.ok) return reps;
-  const duration = optionalNumber(input.duration, 'Duration', {
+  const duration = optionalNumber(input.duration, 'Duración', {
     min: 0,
     max: LIMITS.setDurationSecondsMax,
     integer: true,
   });
   if (!duration.ok) return duration;
-  const distance = optionalNumber(input.distance, 'Distance', { min: 0, max: 1000 });
+  const distance = optionalNumber(input.distance, 'Distancia', { min: 0, max: 1000 });
   if (!distance.ok) return distance;
   const v: ParsedSet = {
     weight: weight.value,
@@ -95,7 +95,7 @@ export function validateSet(input: SetInput, requireValue: boolean): Result<Pars
     distance: distance.value,
   };
   if (requireValue && v.weight === null && v.reps === null && v.durationSeconds === null && v.distance === null) {
-    return err('Enter at least one value (reps, weight, time or distance) before completing the set.');
+    return err('Escribe al menos un valor (repeticiones, peso, tiempo o distancia) antes de completar la serie.');
   }
   return ok(v);
 }
@@ -109,11 +109,11 @@ export interface TemplateExerciseInput {
 export function validateTemplateExercise(
   input: TemplateExerciseInput,
 ): Result<{ targetSets: number; targetReps: number | null; restSeconds: number }> {
-  const sets = optionalNumber(input.targetSets, 'Sets', { min: 1, max: LIMITS.targetSetsMax, integer: true });
+  const sets = optionalNumber(input.targetSets, 'Series', { min: 1, max: LIMITS.targetSetsMax, integer: true });
   if (!sets.ok) return sets;
-  const reps = optionalNumber(input.targetReps, 'Reps', { min: 1, max: LIMITS.repsMax, integer: true });
+  const reps = optionalNumber(input.targetReps, 'Repeticiones', { min: 1, max: LIMITS.repsMax, integer: true });
   if (!reps.ok) return reps;
-  const rest = optionalNumber(input.restSeconds, 'Rest', { min: 0, max: LIMITS.restSecondsMax, integer: true });
+  const rest = optionalNumber(input.restSeconds, 'Descanso', { min: 0, max: LIMITS.restSecondsMax, integer: true });
   if (!rest.ok) return rest;
   return ok({ targetSets: sets.value ?? 3, targetReps: reps.value, restSeconds: rest.value ?? 90 });
 }
@@ -126,29 +126,29 @@ export interface LogInput {
 }
 
 export function validateLog(input: LogInput): Result<{ value: number | null; unit: string | null; text: string }> {
-  const text = validateText(input.text, 'Note');
+  const text = validateText(input.text, 'Nota');
   if (!text.ok) return text;
   if (input.kind === 'note') {
-    if (text.value.length === 0) return err('Write something for the note.');
+    if (text.value.length === 0) return err('Escribe algo en la nota.');
     return ok({ value: null, unit: null, text: text.value });
   }
   const n = parseNumberInput(input.value);
   if (input.kind === 'activity' || input.kind === 'sleep') {
-    if (!isDurationUnit(input.unit)) return err('Choose a unit (minutes or hours).');
+    if (!isDurationUnit(input.unit)) return err('Elige una unidad (minutos u horas).');
     const unit: DurationUnit = input.unit;
-    if (n === null) return err('Enter a duration.');
-    if (Number.isNaN(n)) return err('Duration must be a number.');
-    if (n <= 0) return err('Duration must be more than zero.');
-    if (toMinutes(n, unit) > LIMITS.logMinutesMax) return err('A single entry can be at most 24 hours.');
+    if (n === null) return err('Escribe una duración.');
+    if (Number.isNaN(n)) return err('La duración tiene que ser un número.');
+    if (n <= 0) return err('La duración tiene que ser mayor que cero.');
+    if (toMinutes(n, unit) > LIMITS.logMinutesMax) return err('Una entrada puede durar como máximo 24 horas.');
     return ok({ value: n, unit, text: text.value });
   }
   // mood / energy
-  if (!isScaleUnit(input.unit)) return err('Choose a scale.');
+  if (!isScaleUnit(input.unit)) return err('Elige una escala.');
   const unit: ScaleUnit = input.unit;
-  if (n === null) return err('Pick a value.');
-  if (Number.isNaN(n)) return err('Value must be a number.');
+  if (n === null) return err('Elige un valor.');
+  if (Number.isNaN(n)) return err('El valor tiene que ser un número.');
   const max = scaleMax(unit);
-  if (!Number.isInteger(n) || n < 1 || n > max) return err(`Pick a whole number from 1 to ${max}.`);
+  if (!Number.isInteger(n) || n < 1 || n > max) return err(`Elige un número entero del 1 al ${max}.`);
   return ok({ value: n, unit, text: text.value });
 }
 
@@ -157,14 +157,14 @@ export function validateReminder(input: {
   time: string;
   weekdays: Weekday[];
 }): Result<{ label: string; hour: number; minute: number; weekdays: Weekday[] }> {
-  const label = validateName(input.label, 'Label');
+  const label = validateName(input.label, 'Nombre');
   if (!label.ok) return label;
   const m = /^(\d{1,2}):(\d{2})$/.exec(input.time.trim());
-  if (!m) return err('Use 24-hour time like 07:30.');
+  if (!m) return err('Usa el formato de 24 horas, por ejemplo 07:30.');
   const hour = Number(m[1]);
   const minute = Number(m[2]);
-  if (hour > 23 || minute > 59) return err('Use 24-hour time like 07:30.');
+  if (hour > 23 || minute > 59) return err('Usa el formato de 24 horas, por ejemplo 07:30.');
   const days = Array.from(new Set(input.weekdays)).sort() as Weekday[];
-  if (days.length === 0) return err('Pick at least one day.');
+  if (days.length === 0) return err('Elige al menos un día.');
   return ok({ label: label.value, hour, minute, weekdays: days });
 }

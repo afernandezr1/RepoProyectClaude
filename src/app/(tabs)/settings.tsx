@@ -12,8 +12,8 @@ import { syncReminders } from '../../services/notifications';
 import { useApp } from '../../state/AppContext';
 
 const HEALTH_LABEL: Record<HealthDataType, { title: string; body: string }> = {
-  sleep: { title: 'Sleep', body: 'Read sleep sessions into your sleep log.' },
-  workouts: { title: 'Workouts', body: 'Read workout sessions into your activity log.' },
+  sleep: { title: 'Sueño', body: 'Importa tus sesiones de sueño a tu registro de sueño.' },
+  workouts: { title: 'Entrenamientos', body: 'Importa tus entrenamientos a tu registro de actividad.' },
 };
 
 export default function SettingsScreen() {
@@ -35,18 +35,18 @@ export default function SettingsScreen() {
       await updateSettings(patch);
       if (success) setMsg({ kind: 'success', text: success });
     } catch (e) {
-      setMsg({ kind: 'error', text: `Couldn't save: ${errorMessage(e)}` });
+      setMsg({ kind: 'error', text: `No se pudo guardar: ${errorMessage(e)}` });
     }
   };
 
   const saveRest = () => {
     const n = parseNumberInput(rest);
     if (n === null || Number.isNaN(n) || !Number.isInteger(n) || n < 0 || n > 3600) {
-      setRestError('Use a whole number of seconds between 0 and 3600.');
+      setRestError('Usa un número entero de segundos entre 0 y 3600.');
       return;
     }
     setRestError(null);
-    set({ defaultRestSeconds: n }, 'Default rest saved.');
+    set({ defaultRestSeconds: n }, 'Descanso por defecto guardado.');
   };
 
   const toggleMute = async (muted: boolean) => {
@@ -56,18 +56,18 @@ export default function SettingsScreen() {
       kind: r.status === 'unavailable' ? 'info' : 'success',
       text:
         r.status === 'muted'
-          ? 'Reminders muted. They are kept and can be unmuted any time.'
+          ? 'Recordatorios silenciados. Se conservan y puedes reactivarlos cuando quieras.'
           : r.status === 'unavailable'
             ? r.reason
             : r.status === 'denied'
-              ? 'Unmuted, but notifications are turned off for this app in system settings.'
-              : 'Reminders unmuted.',
+              ? 'Reactivados, pero las notificaciones de esta app están desactivadas en los ajustes del sistema.'
+              : 'Recordatorios reactivados.',
     });
   };
 
   const toggleHealth = async (type: HealthDataType, on: boolean) => {
     if (!on) {
-      await set({ health: { ...settings.health, [type]: false } }, `${HEALTH_LABEL[type].title} import turned off. ${health.manageAccessHint}`);
+      await set({ health: { ...settings.health, [type]: false } }, `Importación de ${HEALTH_LABEL[type].title.toLowerCase()} desactivada. ${health.manageAccessHint}`);
       return;
     }
     setBusyType(type);
@@ -78,8 +78,8 @@ export default function SettingsScreen() {
           kind: 'info',
           text:
             outcome === 'denied'
-              ? 'Access was not granted. That’s completely fine — everything else works without it.'
-              : `${health.platformName} isn’t available on this device.`,
+              ? 'No se concedió el acceso. No pasa nada: todo lo demás funciona sin él.'
+              : `${health.platformName} no está disponible en este dispositivo.`,
         });
         return;
       }
@@ -90,11 +90,11 @@ export default function SettingsScreen() {
         kind: 'success',
         text:
           r.added + r.updated > 0
-            ? `Imported ${r.added} new ${HEALTH_LABEL[type].title.toLowerCase()} entries.`
-            : `Connected. No ${HEALTH_LABEL[type].title.toLowerCase()} data found for the last 30 days${outcome === 'requested' ? ' (or access was not allowed)' : ''}.`,
+            ? `Se importaron ${r.added} entradas nuevas de ${HEALTH_LABEL[type].title.toLowerCase()}.`
+            : `Conectado. No hay datos de ${HEALTH_LABEL[type].title.toLowerCase()} de los últimos 30 días${outcome === 'requested' ? ' (o no se permitió el acceso)' : ''}.`,
       });
     } catch (e) {
-      setMsg({ kind: 'error', text: `Health import failed: ${errorMessage(e)}` });
+      setMsg({ kind: 'error', text: `Falló la importación de salud: ${errorMessage(e)}` });
     } finally {
       setBusyType(null);
     }
@@ -105,9 +105,9 @@ export default function SettingsScreen() {
     try {
       const r = await importHealth(store, type);
       bump();
-      setMsg({ kind: 'success', text: `Synced: ${r.added} new, ${r.updated} refreshed.` });
+      setMsg({ kind: 'success', text: `Sincronizado: ${r.added} nuevas, ${r.updated} actualizadas.` });
     } catch (e) {
-      setMsg({ kind: 'error', text: `Sync failed: ${errorMessage(e)}` });
+      setMsg({ kind: 'error', text: `Falló la sincronización: ${errorMessage(e)}` });
     } finally {
       setBusyType(null);
     }
@@ -118,55 +118,55 @@ export default function SettingsScreen() {
       <Banner message={msg} onDismiss={() => setMsg(null)} />
 
       <Card>
-        <H2>Units</H2>
-        <Muted>Change any time. Existing entries are converted for display, never altered.</Muted>
-        <Segmented label="Weight" value={settings.weightUnit} onChange={(v) => set({ weightUnit: v })} options={[{ value: 'kg', label: 'kg' }, { value: 'lb', label: 'lb' }]} />
-        <Segmented label="Distance" value={settings.distanceUnit} onChange={(v) => set({ distanceUnit: v })} options={[{ value: 'km', label: 'km' }, { value: 'mi', label: 'mi' }]} />
-        <Segmented label="Activity duration" value={settings.activityUnit} onChange={(v) => set({ activityUnit: v })} options={[{ value: 'min', label: 'minutes' }, { value: 'h', label: 'hours' }]} />
-        <Segmented label="Sleep duration" value={settings.sleepUnit} onChange={(v) => set({ sleepUnit: v })} options={[{ value: 'min', label: 'minutes' }, { value: 'h', label: 'hours' }]} />
-        <Segmented label="Mood scale" value={settings.moodScale} onChange={(v) => set({ moodScale: v })} options={[{ value: 'of5', label: '1–5' }, { value: 'of10', label: '1–10' }]} />
-        <Segmented label="Energy scale" value={settings.energyScale} onChange={(v) => set({ energyScale: v })} options={[{ value: 'of5', label: '1–5' }, { value: 'of10', label: '1–10' }]} />
+        <H2>Unidades</H2>
+        <Muted>Cámbialas cuando quieras. Las entradas existentes se convierten al mostrarlas, nunca se modifican.</Muted>
+        <Segmented label="Peso" value={settings.weightUnit} onChange={(v) => set({ weightUnit: v })} options={[{ value: 'kg', label: 'kg' }, { value: 'lb', label: 'lb' }]} />
+        <Segmented label="Distancia" value={settings.distanceUnit} onChange={(v) => set({ distanceUnit: v })} options={[{ value: 'km', label: 'km' }, { value: 'mi', label: 'mi' }]} />
+        <Segmented label="Duración de la actividad" value={settings.activityUnit} onChange={(v) => set({ activityUnit: v })} options={[{ value: 'min', label: 'minutos' }, { value: 'h', label: 'horas' }]} />
+        <Segmented label="Duración del sueño" value={settings.sleepUnit} onChange={(v) => set({ sleepUnit: v })} options={[{ value: 'min', label: 'minutos' }, { value: 'h', label: 'horas' }]} />
+        <Segmented label="Escala de ánimo" value={settings.moodScale} onChange={(v) => set({ moodScale: v })} options={[{ value: 'of5', label: '1–5' }, { value: 'of10', label: '1–10' }]} />
+        <Segmented label="Escala de energía" value={settings.energyScale} onChange={(v) => set({ energyScale: v })} options={[{ value: 'of5', label: '1–5' }, { value: 'of10', label: '1–10' }]} />
         <Row style={{ alignItems: 'flex-end' }}>
-          <Field style={{ flex: 1 }} label="Default rest (seconds)" value={rest} onChangeText={setRest} keyboardType="number-pad" error={restError} />
-          <Button small title="Save" onPress={saveRest} />
+          <Field style={{ flex: 1 }} label="Descanso por defecto (segundos)" value={rest} onChangeText={setRest} keyboardType="number-pad" error={restError} />
+          <Button small title="Guardar" onPress={saveRest} />
         </Row>
       </Card>
 
       <Card>
-        <H2>Reminders</H2>
+        <H2>Recordatorios</H2>
         <Row style={{ justifyContent: 'space-between' }}>
-          <Body>Mute all reminders</Body>
+          <Body>Silenciar todos los recordatorios</Body>
           <Switch
-            accessibilityLabel="Mute all reminders"
+            accessibilityLabel="Silenciar todos los recordatorios"
             value={settings.remindersMuted}
             onValueChange={toggleMute}
             trackColor={{ true: t.primary, false: t.border }}
           />
         </Row>
-        <Button title="Manage reminders" kind="secondary" onPress={() => router.push('/reminders')} />
+        <Button title="Gestionar recordatorios" kind="secondary" onPress={() => router.push('/reminders')} />
       </Card>
 
       <Card>
-        <H2>Health platform</H2>
+        <H2>Plataforma de salud</H2>
         {!health.enabledInBuild ? (
           <Muted>
-            Off in this build. The app works fully without it. To enable, see “Health integration” in the README (requires a
-            development build).
+            Desactivada en esta versión. La app funciona completa sin ella. Para activarla, consulta “Health integration” en el
+            README (necesita una development build).
           </Muted>
         ) : healthAvailable === false ? (
-          <Muted>{health.platformName} isn’t available on this device. Everything else works normally.</Muted>
+          <Muted>{health.platformName} no está disponible en este dispositivo. Todo lo demás funciona con normalidad.</Muted>
         ) : (
           <>
             <Muted>
-              Optional and read-only. Each type asks for its own permission. Nothing is ever written to or shared from your health
-              data.
+              Opcional y de solo lectura. Cada tipo de dato pide su propio permiso. Nunca se escribe ni se comparte nada de tus datos
+              de salud.
             </Muted>
             {HEALTH_DATA_TYPES.map((type) => (
               <Card key={type}>
                 <Row style={{ justifyContent: 'space-between' }}>
                   <Body style={{ fontWeight: '600' }}>{HEALTH_LABEL[type].title}</Body>
                   <Switch
-                    accessibilityLabel={`Import ${HEALTH_LABEL[type].title} from ${health.platformName}`}
+                    accessibilityLabel={`Importar ${HEALTH_LABEL[type].title} desde ${health.platformName}`}
                     value={settings.health[type]}
                     disabled={busyType !== null}
                     onValueChange={(v) => toggleHealth(type, v)}
@@ -175,7 +175,7 @@ export default function SettingsScreen() {
                 </Row>
                 <Muted>{HEALTH_LABEL[type].body}</Muted>
                 {settings.health[type] ? (
-                  <Button small kind="ghost" title="Sync now" busy={busyType === type} onPress={() => syncNow(type)} />
+                  <Button small kind="ghost" title="Sincronizar ahora" busy={busyType === type} onPress={() => syncNow(type)} />
                 ) : null}
               </Card>
             ))}
@@ -185,11 +185,11 @@ export default function SettingsScreen() {
       </Card>
 
       <Card>
-        <H2>Data & privacy</H2>
-        <Muted>No account. No analytics. Your data lives only on this device.</Muted>
-        <Button title="Export, restore or delete data" kind="secondary" onPress={() => router.push('/data')} />
-        <Button title="Weekly routine" kind="ghost" onPress={() => router.push('/routine')} />
-        <Button title="About & safety" kind="ghost" onPress={() => router.push('/about')} />
+        <H2>Datos y privacidad</H2>
+        <Muted>Sin cuenta. Sin analíticas. Tus datos viven solo en este dispositivo.</Muted>
+        <Button title="Exportar, restaurar o borrar datos" kind="secondary" onPress={() => router.push('/data')} />
+        <Button title="Rutina semanal" kind="ghost" onPress={() => router.push('/routine')} />
+        <Button title="Información y seguridad" kind="ghost" onPress={() => router.push('/about')} />
       </Card>
     </Screen>
   );

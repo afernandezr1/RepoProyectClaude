@@ -26,24 +26,24 @@ export default function Trends() {
     return computeTrends({ ...state.data, settings, now: new Date(), weeks: Number(range) });
   }, [state, settings, range]);
 
-  if (state.status === 'loading' || (!trends && state.status !== 'error')) return <LoadingState label="Looking at your weeks…" />;
+  if (state.status === 'loading' || (!trends && state.status !== 'error')) return <LoadingState label="Revisando tus semanas…" />;
   if (state.status === 'error' || !trends) {
     return (
       <Screen>
-        <ErrorState message={state.status === 'error' ? errorMessage(state.error) : 'Unknown error'} onRetry={retry} />
+        <ErrorState message={state.status === 'error' ? errorMessage(state.error) : 'Error desconocido'} onRetry={retry} />
       </Screen>
     );
   }
 
   const rangeControl = (
     <Segmented
-      label="Show"
+      label="Mostrar"
       value={range}
       onChange={setRange}
       options={[
-        { value: '4', label: '4 weeks' },
-        { value: '8', label: '8 weeks' },
-        { value: '12', label: '12 weeks' },
+        { value: '4', label: '4 semanas' },
+        { value: '8', label: '8 semanas' },
+        { value: '12', label: '12 semanas' },
       ]}
     />
   );
@@ -53,9 +53,9 @@ export default function Trends() {
       <Screen>
         {rangeControl}
         <EmptyState
-          title="Nothing to show yet"
-          body="Patterns appear once you log a workout or an entry. There are no targets here — just a picture of your weeks."
-          actionLabel="Add a log entry"
+          title="Aún no hay nada que mostrar"
+          body="Los patrones aparecen cuando registras un entrenamiento o una entrada. Aquí no hay objetivos, solo una imagen de tus semanas."
+          actionLabel="Añadir una entrada"
           onAction={() => router.push('/log-new')}
         />
       </Screen>
@@ -78,24 +78,24 @@ export default function Trends() {
       </Card>
 
       <Card>
-        <H2>Active days per week</H2>
-        <Muted>Days with a workout or a logged activity.</Muted>
-        <Bars label="Active days per week" data={weeks.map((w) => ({ label: w.label, value: w.activeDays }))} />
+        <H2>Días activos por semana</H2>
+        <Muted>Días con un entrenamiento o una actividad registrada.</Muted>
+        <Bars label="Días activos por semana" data={weeks.map((w) => ({ label: w.label, value: w.activeDays }))} />
       </Card>
 
       <Card>
-        <H2>Sessions by weekday</H2>
+        <H2>Sesiones por día de la semana</H2>
         <Bars
-          label="Sessions by weekday"
+          label="Sesiones por día de la semana"
           data={trends.weekdayPattern.map((p) => ({ label: WEEKDAY_SHORT[p.weekday], value: p.sessions }))}
         />
       </Card>
 
       <Card>
-        <H2>Training volume</H2>
-        <Muted>Weight × reps of completed sets, in {unitLabel(settings.weightUnit)}.</Muted>
+        <H2>Volumen de entrenamiento</H2>
+        <Muted>Peso × repeticiones de las series completadas, en {unitLabel(settings.weightUnit)}.</Muted>
         <Bars
-          label="Training volume per week"
+          label="Volumen de entrenamiento por semana"
           format={(v) => (v >= 1000 ? `${fmt(v / 1000)}k` : fmt(v, 0))}
           data={weeks.map((w) => ({ label: w.label, value: w.volume }))}
         />
@@ -103,44 +103,44 @@ export default function Trends() {
 
       {hasActivity ? (
         <Card>
-          <H2>Logged activity</H2>
+          <H2>Actividad registrada</H2>
           <Bars
-            label={`Logged activity per week in ${settings.activityUnit}`}
+            label={`Actividad registrada por semana en ${settings.activityUnit}`}
             format={(v) => fmt(v)}
             data={weeks.map((w) => ({ label: w.label, value: w.activityTotal }))}
           />
-          <Muted>Total per week, {unitLabel(settings.activityUnit)}.</Muted>
+          <Muted>Total por semana, en {unitLabel(settings.activityUnit)}.</Muted>
         </Card>
       ) : null}
 
       {hasSleep ? (
         <Card>
-          <H2>Sleep</H2>
+          <H2>Sueño</H2>
           <Bars
-            label="Average logged sleep per week"
+            label="Sueño medio registrado por semana"
             format={(v) => fmt(v)}
             data={weeks.map((w) => ({ label: w.label, value: w.sleepAverage }))}
           />
-          <Muted>Average per entry, {unitLabel(settings.sleepUnit)}.</Muted>
+          <Muted>Media por entrada, en {unitLabel(settings.sleepUnit)}.</Muted>
         </Card>
       ) : null}
 
       {hasMood || hasEnergy ? (
         <Card>
-          <H2>Mood & energy</H2>
+          <H2>Ánimo y energía</H2>
           {hasMood ? (
             <>
-              <Muted>Mood, average {unitLabel(settings.moodScale)}</Muted>
-              <Bars label="Average mood per week" format={(v) => fmt(v)} data={weeks.map((w) => ({ label: w.label, value: w.moodAverage }))} />
+              <Muted>Ánimo, media {unitLabel(settings.moodScale)}</Muted>
+              <Bars label="Ánimo medio por semana" format={(v) => fmt(v)} data={weeks.map((w) => ({ label: w.label, value: w.moodAverage }))} />
             </>
           ) : null}
           {hasEnergy ? (
             <>
-              <Muted>Energy, average {unitLabel(settings.energyScale)}</Muted>
-              <Bars label="Average energy per week" format={(v) => fmt(v)} data={weeks.map((w) => ({ label: w.label, value: w.energyAverage }))} />
+              <Muted>Energía, media {unitLabel(settings.energyScale)}</Muted>
+              <Bars label="Energía media por semana" format={(v) => fmt(v)} data={weeks.map((w) => ({ label: w.label, value: w.energyAverage }))} />
             </>
           ) : null}
-          <Muted>Just a record of how you felt — ups and downs are normal.</Muted>
+          <Muted>Solo un registro de cómo te sentiste. Los altibajos son normales.</Muted>
         </Card>
       ) : null}
 
@@ -149,18 +149,18 @@ export default function Trends() {
           <H2>{e.name}</H2>
           {e.points.some((p) => p.topWeight != null) ? (
             <>
-              <Muted>Heaviest completed set per week, {unitLabel(settings.weightUnit)}</Muted>
-              <Bars label={`${e.name}, heaviest set per week`} format={(v) => fmt(v)} data={e.points.map((p) => ({ label: p.weekStart.slice(5), value: p.topWeight }))} />
+              <Muted>Serie completada más pesada por semana, en {unitLabel(settings.weightUnit)}</Muted>
+              <Bars label={`${e.name}, serie más pesada por semana`} format={(v) => fmt(v)} data={e.points.map((p) => ({ label: `${p.weekStart.slice(8)}/${p.weekStart.slice(5, 7)}`, value: p.topWeight }))} />
             </>
           ) : (
             <>
-              <Muted>Total reps per week</Muted>
-              <Bars label={`${e.name}, reps per week`} data={e.points.map((p) => ({ label: p.weekStart.slice(5), value: p.totalReps }))} />
+              <Muted>Repeticiones totales por semana</Muted>
+              <Bars label={`${e.name}, repeticiones por semana`} data={e.points.map((p) => ({ label: `${p.weekStart.slice(8)}/${p.weekStart.slice(5, 7)}`, value: p.totalReps }))} />
             </>
           )}
         </Card>
       ))}
-      <Muted>Patterns describe what you logged. They aren’t a measure of health or progress toward any target.</Muted>
+      <Muted>Los patrones describen lo que registraste. No miden tu salud ni el avance hacia ningún objetivo.</Muted>
     </Screen>
   );
 }

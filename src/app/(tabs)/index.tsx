@@ -22,7 +22,7 @@ export default function Today() {
       bump();
       router.push(`/workout/${id}`);
     } catch (e) {
-      setMsg({ kind: 'error', text: `Couldn't start the workout: ${errorMessage(e)}` });
+      setMsg({ kind: 'error', text: `No se pudo empezar el entrenamiento: ${errorMessage(e)}` });
     } finally {
       setBusy(null);
     }
@@ -47,46 +47,46 @@ export default function Today() {
       <Banner message={msg} onDismiss={() => setMsg(null)} />
       {!persistent ? (
         <Card>
-          <H2>Not being saved</H2>
-          <Body>This browser is blocking storage, so entries disappear when the page closes. Export from Settings to keep them.</Body>
+          <H2>No se está guardando</H2>
+          <Body>Este navegador bloquea el almacenamiento, así que lo que registres desaparece al cerrar la página. Exporta desde Ajustes para conservarlo.</Body>
         </Card>
       ) : null}
 
       {active ? (
         <Card>
-          <H2>Workout in progress</H2>
+          <H2>Entrenamiento en curso</H2>
           <Body>{active.name}</Body>
-          <Button testID="resume-workout" title="Resume" onPress={() => router.push(`/workout/${active.id}`)} />
+          <Button testID="resume-workout" title="Continuar" onPress={() => router.push(`/workout/${active.id}`)} />
         </Card>
       ) : null}
 
       <Card>
-        <H2>Today’s plan</H2>
+        <H2>El plan de hoy</H2>
         {plan?.kind === 'rest' ? (
-          <Body>Rest day. Recovery is part of training — enjoy it, or do something light if you feel like it.</Body>
+          <Body>Día de descanso. Recuperarse es parte del entrenamiento: disfrútalo, o haz algo suave si te apetece.</Body>
         ) : plan?.kind === 'workout' ? (
           <>
-            <Body>Workout day{planned ? `: ${planned.name}` : ''}.</Body>
+            <Body>Día de entrenamiento{planned ? `: ${planned.name}` : ''}.</Body>
             {planned && !active ? (
               <Button
-                title={`Start ${planned.name}`}
+                title={`Empezar ${planned.name}`}
                 onPress={() => start(planned.id)}
                 busy={busy === planned.id}
               />
             ) : null}
           </>
         ) : (
-          <Body>Open day — do whatever suits you, or nothing at all.</Body>
+          <Body>Día libre: haz lo que te apetezca, o nada.</Body>
         )}
-        <Button title="Edit weekly routine" kind="ghost" small onPress={() => router.push('/routine')} />
+        <Button title="Editar rutina semanal" kind="ghost" small onPress={() => router.push('/routine')} />
       </Card>
 
-      <H2>Start a workout</H2>
+      <H2>Empezar un entrenamiento</H2>
       {templates.length === 0 ? (
         <EmptyState
-          title="No templates yet"
-          body="Templates hold the exercises, sets and rest times you like to use."
-          actionLabel="Create a template"
+          title="Aún no hay plantillas"
+          body="Las plantillas guardan los ejercicios, series y descansos que te gusta usar."
+          actionLabel="Crear una plantilla"
           onAction={() => router.push('/templates/new')}
         />
       ) : (
@@ -96,7 +96,7 @@ export default function Today() {
               <Body style={{ fontWeight: '600', flexShrink: 1 }}>{t.name}</Body>
               <Button
                 testID={`start-${t.id}`}
-                title={active ? 'In progress' : 'Start'}
+                title={active ? 'En curso' : 'Empezar'}
                 small
                 disabled={!!active || busy !== null}
                 busy={busy === t.id}
@@ -104,22 +104,22 @@ export default function Today() {
               />
             </Row>
             <Muted>
-              {t.exercises.length} exercises · {t.exercises.reduce((a, e) => a + e.targetSets, 0)} sets
+              {t.exercises.length} ejercicios · {t.exercises.reduce((a, e) => a + e.targetSets, 0)} series
             </Muted>
           </Card>
         ))
       )}
       <Row>
         <Button
-          title="Empty workout"
+          title="Entrenamiento vacío"
           kind="secondary"
           disabled={!!active || busy !== null}
           busy={busy === 'empty'}
           onPress={() => start(null)}
         />
-        <Button title="Manage templates" kind="ghost" onPress={() => router.push('/templates')} />
+        <Button title="Gestionar plantillas" kind="ghost" onPress={() => router.push('/templates')} />
       </Row>
-      <Button title="About & safety" kind="ghost" small onPress={() => router.push('/about')} />
+      <Button title="Información y seguridad" kind="ghost" small onPress={() => router.push('/about')} />
     </Screen>
   );
 }

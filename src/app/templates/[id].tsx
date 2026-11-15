@@ -113,9 +113,9 @@ function TemplateEditor({
 
   const save = async () => {
     const errs: Record<string, string> = {};
-    const nm = validateName(name, 'Template name');
+    const nm = validateName(name, 'Nombre de la plantilla');
     if (!nm.ok) errs.name = nm.error;
-    const nt = validateText(notes, 'Notes');
+    const nt = validateText(notes, 'Notas');
     if (!nt.ok) errs.notes = nt.error;
     const parsed = rows.map((r) => {
       const v = validateTemplateExercise(r);
@@ -133,23 +133,23 @@ function TemplateEditor({
         exercises: parsed.filter((p): p is NonNullable<typeof p> => p !== null),
       });
       bump();
-      setMsg({ kind: 'success', text: 'Template saved.' });
+      setMsg({ kind: 'success', text: 'Plantilla guardada.' });
       if (isNew) router.replace(`/templates/${saved}`);
     } catch (e) {
-      setMsg({ kind: 'error', text: `Couldn't save: ${errorMessage(e)}` });
+      setMsg({ kind: 'error', text: `No se pudo guardar: ${errorMessage(e)}` });
     } finally {
       setBusy(false);
     }
   };
 
   const remove = async () => {
-    if (!(await confirm('Delete template?', 'Past workouts stay in your history.', 'Delete', true))) return;
+    if (!(await confirm('¿Eliminar la plantilla?', 'Los entrenamientos anteriores se quedan en tu historial.', 'Eliminar', true))) return;
     try {
       await store.deleteTemplate(id);
       bump();
       router.back();
     } catch (e) {
-      setMsg({ kind: 'error', text: `Couldn't delete: ${errorMessage(e)}` });
+      setMsg({ kind: 'error', text: `No se pudo eliminar: ${errorMessage(e)}` });
     }
   };
 
@@ -160,23 +160,23 @@ function TemplateEditor({
   return (
     <Screen>
       <Banner message={msg} onDismiss={() => setMsg(null)} />
-      <Field testID="template-name" label="Name" value={name} onChangeText={setName} error={errors.name} maxLength={80} />
-      <Field label="Notes (optional)" value={notes} onChangeText={setNotes} error={errors.notes} multiline maxLength={2000} />
-      {rows.length === 0 ? <Muted>No exercises yet. Add one below.</Muted> : null}
+      <Field testID="template-name" label="Nombre" value={name} onChangeText={setName} error={errors.name} maxLength={80} />
+      <Field label="Notas (opcional)" value={notes} onChangeText={setNotes} error={errors.notes} multiline maxLength={2000} />
+      {rows.length === 0 ? <Muted>Aún no hay ejercicios. Añade uno abajo.</Muted> : null}
       {rows.map((r, i) => (
         <Card key={r.key}>
           <Row style={{ justifyContent: 'space-between' }}>
-            <Body style={{ fontWeight: '600', flexShrink: 1 }}>{names.get(r.exerciseId) ?? 'Exercise'}</Body>
+            <Body style={{ fontWeight: '600', flexShrink: 1 }}>{names.get(r.exerciseId) ?? 'Ejercicio'}</Body>
             <Row>
-              <Button small kind="ghost" title="↑" accessibilityLabel="Move up" disabled={i === 0} onPress={() => move(r.key, -1)} />
-              <Button small kind="ghost" title="↓" accessibilityLabel="Move down" disabled={i === rows.length - 1} onPress={() => move(r.key, 1)} />
-              <Button small kind="ghost" title="Remove" onPress={() => setRows((rs) => rs.filter((x) => x.key !== r.key))} />
+              <Button small kind="ghost" title="↑" accessibilityLabel="Subir" disabled={i === 0} onPress={() => move(r.key, -1)} />
+              <Button small kind="ghost" title="↓" accessibilityLabel="Bajar" disabled={i === rows.length - 1} onPress={() => move(r.key, 1)} />
+              <Button small kind="ghost" title="Quitar" onPress={() => setRows((rs) => rs.filter((x) => x.key !== r.key))} />
             </Row>
           </Row>
           <Row>
-            <Field style={{ flex: 1 }} label="Sets" value={r.targetSets} onChangeText={(v) => update(r.key, { targetSets: v })} keyboardType="number-pad" />
-            <Field style={{ flex: 1 }} label="Reps (optional)" value={r.targetReps} onChangeText={(v) => update(r.key, { targetReps: v })} keyboardType="number-pad" />
-            <Field style={{ flex: 1 }} label="Rest (s)" value={r.restSeconds} onChangeText={(v) => update(r.key, { restSeconds: v })} keyboardType="number-pad" />
+            <Field style={{ flex: 1 }} label="Series" value={r.targetSets} onChangeText={(v) => update(r.key, { targetSets: v })} keyboardType="number-pad" />
+            <Field style={{ flex: 1 }} label="Reps (opcional)" value={r.targetReps} onChangeText={(v) => update(r.key, { targetReps: v })} keyboardType="number-pad" />
+            <Field style={{ flex: 1 }} label="Descanso (s)" value={r.restSeconds} onChangeText={(v) => update(r.key, { restSeconds: v })} keyboardType="number-pad" />
           </Row>
           {errors[r.key] ? <Muted>{errors[r.key]}</Muted> : null}
         </Card>
@@ -184,13 +184,13 @@ function TemplateEditor({
       {picking ? (
         <ExercisePicker exercises={exercises} onPick={add} onCreate={create} onCancel={() => setPicking(false)} />
       ) : (
-        <Button title="+ Add exercise" kind="secondary" onPress={() => setPicking(true)} />
+        <Button title="+ Añadir ejercicio" kind="secondary" onPress={() => setPicking(true)} />
       )}
       {suggestions.map((s) => (
         <Muted key={s}>{s}</Muted>
       ))}
-      <Button testID="save-template" title="Save template" onPress={save} busy={busy} />
-      {!isNew ? <Button title="Delete template" kind="ghost" onPress={remove} /> : null}
+      <Button testID="save-template" title="Guardar plantilla" onPress={save} busy={busy} />
+      {!isNew ? <Button title="Eliminar plantilla" kind="ghost" onPress={remove} /> : null}
     </Screen>
   );
 }

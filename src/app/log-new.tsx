@@ -39,7 +39,7 @@ export default function NewLog() {
       bump();
       router.back();
     } catch (e) {
-      setMsg({ kind: 'error', text: `Couldn't save: ${errorMessage(e)}` });
+      setMsg({ kind: 'error', text: `No se pudo guardar: ${errorMessage(e)}` });
     } finally {
       setBusy(false);
     }
@@ -56,19 +56,19 @@ export default function NewLog() {
         <>
           <Field
             testID="log-value"
-            label={kind === 'activity' ? 'How long?' : 'How long did you sleep?'}
+            label={kind === 'activity' ? '¿Cuánto tiempo?' : '¿Cuánto dormiste?'}
             value={value}
             onChangeText={setValue}
             keyboardType="decimal-pad"
             error={error}
           />
           <Segmented<DurationUnit>
-            label="Unit"
+            label="Unidad"
             value={(unit as DurationUnit) ?? 'min'}
             onChange={setUnit}
             options={[
-              { value: 'min', label: 'minutes' },
-              { value: 'h', label: 'hours' },
+              { value: 'min', label: 'minutos' },
+              { value: 'h', label: 'horas' },
             ]}
           />
         </>
@@ -76,7 +76,7 @@ export default function NewLog() {
       {isScale ? (
         <>
           <Segmented<ScaleUnit>
-            label="Scale"
+            label="Escala"
             value={(unit as ScaleUnit) ?? 'of5'}
             onChange={(u) => {
               setUnit(u);
@@ -87,7 +87,7 @@ export default function NewLog() {
               { value: 'of10', label: '1–10' },
             ]}
           />
-          <Muted>{kind === 'mood' ? 'How are you feeling?' : 'How is your energy?'} There is no right answer.</Muted>
+          <Muted>{kind === 'mood' ? '¿Cómo te sientes?' : '¿Cómo está tu energía?'} No hay respuesta correcta.</Muted>
           <Row>
             {Array.from({ length: max }, (_, i) => String(i + 1)).map((n) => (
               <Button key={n} small kind={value === n ? 'primary' : 'secondary'} title={n} onPress={() => setValue(n)} />
@@ -97,7 +97,7 @@ export default function NewLog() {
         </>
       ) : null}
       <Field
-        label={kind === 'note' ? 'Note' : kind === 'activity' ? 'What did you do? (optional)' : 'Note (optional)'}
+        label={kind === 'note' ? 'Nota' : kind === 'activity' ? '¿Qué hiciste? (opcional)' : 'Nota (opcional)'}
         value={text}
         onChangeText={setText}
         multiline
@@ -105,8 +105,8 @@ export default function NewLog() {
         error={kind === 'note' ? error : null}
       />
       <Banner message={msg} onDismiss={() => setMsg(null)} />
-      <Button testID="save-log" title="Save" onPress={save} busy={busy} />
-      <Muted>Default units can be changed in Settings.</Muted>
+      <Button testID="save-log" title="Guardar" onPress={save} busy={busy} />
+      <Muted>Las unidades por defecto se cambian en Ajustes.</Muted>
     </Screen>
   );
 }

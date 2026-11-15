@@ -14,10 +14,10 @@ export function routineSuggestions(routine: RoutineDay[]): string[] {
   const workout = routine.filter((d) => d.kind === 'workout').length;
   const rest = routine.filter((d) => d.kind === 'rest').length;
   if (rest === 0) {
-    out.push('Rest days help recovery. You might add one, but the choice is yours.');
+    out.push('Los días de descanso ayudan a recuperarse. Podrías añadir uno, pero tú decides.');
   }
   if (workout === 0) {
-    out.push('No workout days planned. That is fine — you can still log anything you do.');
+    out.push('No hay días de entrenamiento planificados. No pasa nada: puedes registrar lo que hagas igualmente.');
   }
   return out;
 }
@@ -26,7 +26,7 @@ export function routineSuggestions(routine: RoutineDay[]): string[] {
 export function templateSuggestions(t: { exercises: Pick<Template['exercises'][number], 'targetSets'>[] }): string[] {
   const totalSets = t.exercises.reduce((a, e) => a + e.targetSets, 0);
   if (totalSets > 30) {
-    return ['This template has a lot of sets. Shorter sessions are perfectly fine too.'];
+    return ['Esta plantilla tiene muchas series. Las sesiones más cortas también están perfectamente bien.'];
   }
   return [];
 }
@@ -38,23 +38,23 @@ export interface SeedExercise {
 }
 
 export const BUILTIN_EXERCISES: SeedExercise[] = [
-  { id: 'ex-squat', name: 'Squat', kind: 'weight_reps' },
-  { id: 'ex-bench', name: 'Bench Press', kind: 'weight_reps' },
-  { id: 'ex-deadlift', name: 'Deadlift', kind: 'weight_reps' },
-  { id: 'ex-ohp', name: 'Overhead Press', kind: 'weight_reps' },
-  { id: 'ex-row', name: 'Barbell Row', kind: 'weight_reps' },
-  { id: 'ex-db-row', name: 'Dumbbell Row', kind: 'weight_reps' },
-  { id: 'ex-goblet', name: 'Goblet Squat', kind: 'weight_reps' },
-  { id: 'ex-rdl', name: 'Romanian Deadlift', kind: 'weight_reps' },
-  { id: 'ex-lunge', name: 'Lunge', kind: 'weight_reps' },
-  { id: 'ex-latpull', name: 'Lat Pulldown', kind: 'weight_reps' },
-  { id: 'ex-pullup', name: 'Pull-up', kind: 'reps' },
-  { id: 'ex-pushup', name: 'Push-up', kind: 'reps' },
-  { id: 'ex-plank', name: 'Plank', kind: 'duration' },
-  { id: 'ex-walk', name: 'Walk', kind: 'distance' },
-  { id: 'ex-run', name: 'Run', kind: 'distance' },
-  { id: 'ex-cycle', name: 'Cycling', kind: 'distance' },
-  { id: 'ex-stretch', name: 'Stretching', kind: 'duration' },
+  { id: 'ex-squat', name: 'Sentadilla', kind: 'weight_reps' },
+  { id: 'ex-bench', name: 'Press de banca', kind: 'weight_reps' },
+  { id: 'ex-deadlift', name: 'Peso muerto', kind: 'weight_reps' },
+  { id: 'ex-ohp', name: 'Press militar', kind: 'weight_reps' },
+  { id: 'ex-row', name: 'Remo con barra', kind: 'weight_reps' },
+  { id: 'ex-db-row', name: 'Remo con mancuerna', kind: 'weight_reps' },
+  { id: 'ex-goblet', name: 'Sentadilla goblet', kind: 'weight_reps' },
+  { id: 'ex-rdl', name: 'Peso muerto rumano', kind: 'weight_reps' },
+  { id: 'ex-lunge', name: 'Zancada', kind: 'weight_reps' },
+  { id: 'ex-latpull', name: 'Jalón al pecho', kind: 'weight_reps' },
+  { id: 'ex-pullup', name: 'Dominada', kind: 'reps' },
+  { id: 'ex-pushup', name: 'Flexión', kind: 'reps' },
+  { id: 'ex-plank', name: 'Plancha', kind: 'duration' },
+  { id: 'ex-walk', name: 'Caminar', kind: 'distance' },
+  { id: 'ex-run', name: 'Correr', kind: 'distance' },
+  { id: 'ex-cycle', name: 'Ciclismo', kind: 'distance' },
+  { id: 'ex-stretch', name: 'Estiramientos', kind: 'duration' },
 ];
 
 /** Starter templates: moderate volume, generous rest. */
@@ -66,8 +66,8 @@ export const STARTER_TEMPLATES: {
 }[] = [
   {
     id: 'tpl-full-a',
-    name: 'Full Body A',
-    notes: 'A balanced session. Adjust anything to suit you.',
+    name: 'Cuerpo completo A',
+    notes: 'Una sesión equilibrada. Ajusta lo que quieras.',
     exercises: [
       { exerciseId: 'ex-goblet', targetSets: 3, targetReps: 10, restSeconds: 90 },
       { exerciseId: 'ex-pushup', targetSets: 3, targetReps: 10, restSeconds: 90 },
@@ -77,8 +77,8 @@ export const STARTER_TEMPLATES: {
   },
   {
     id: 'tpl-full-b',
-    name: 'Full Body B',
-    notes: 'Alternate with A on training days if you like.',
+    name: 'Cuerpo completo B',
+    notes: 'Altérnala con la A en los días de entrenamiento, si quieres.',
     exercises: [
       { exerciseId: 'ex-rdl', targetSets: 3, targetReps: 8, restSeconds: 120 },
       { exerciseId: 'ex-ohp', targetSets: 3, targetReps: 8, restSeconds: 120 },

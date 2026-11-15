@@ -10,7 +10,7 @@ import { useLoad } from '../../state/AppContext';
 export default function History() {
   const { state, retry } = useLoad((s) => s.listHistory());
 
-  if (state.status === 'loading') return <LoadingState label="Loading history…" />;
+  if (state.status === 'loading') return <LoadingState label="Cargando historial…" />;
   if (state.status === 'error') {
     return (
       <Screen>
@@ -22,9 +22,9 @@ export default function History() {
     return (
       <Screen>
         <EmptyState
-          title="No workouts logged yet"
-          body="Finished workouts appear here. Everything is stored only on this device."
-          actionLabel="Start one"
+          title="Aún no has registrado entrenamientos"
+          body="Los entrenamientos terminados aparecen aquí. Todo se guarda solo en este dispositivo."
+          actionLabel="Empezar uno"
           onAction={() => router.navigate('/')}
         />
       </Screen>
@@ -43,7 +43,7 @@ export default function History() {
             <Body style={{ fontWeight: '600' }}>{workout.name}</Body>
             <Muted>{formatDateTime(workout.startedAt)}</Muted>
             <Muted>
-              {fmt(minutesBetween(workout.startedAt, workout.endedAt), 0)} min · {exerciseCount} exercises · {completedSets} sets
+              {fmt(minutesBetween(workout.startedAt, workout.endedAt), 0)} min · {exerciseCount} ejercicios · {completedSets} series
             </Muted>
           </Card>
         </Pressable>

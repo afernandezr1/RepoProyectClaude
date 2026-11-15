@@ -25,11 +25,11 @@ export default function DataScreen() {
       setMsg({
         kind: 'success',
         text: saved.uri
-          ? `Saved ${saved.filename}${saved.shared ? '' : ' in the app’s documents folder'}.`
-          : `Downloaded ${saved.filename}.`,
+          ? `Guardado ${saved.filename}${saved.shared ? '' : ' en la carpeta de documentos de la app'}.`
+          : `Descargado ${saved.filename}.`,
       });
     } catch (e) {
-      setMsg({ kind: 'error', text: `Export failed: ${errorMessage(e)}` });
+      setMsg({ kind: 'error', text: `Falló la exportación: ${errorMessage(e)}` });
     } finally {
       setBusy(null);
     }
@@ -41,9 +41,9 @@ export default function DataScreen() {
       const b = buildBackup(await store.exportAll(), new Date());
       const a = await saveAndShare('steady-log-sets', 'csv', setsToCsv(b));
       const l = await saveAndShare('steady-log-logs', 'csv', logsToCsv(b));
-      setMsg({ kind: 'success', text: `Saved ${a.filename} and ${l.filename}.` });
+      setMsg({ kind: 'success', text: `Guardados ${a.filename} y ${l.filename}.` });
     } catch (e) {
-      setMsg({ kind: 'error', text: `Export failed: ${errorMessage(e)}` });
+      setMsg({ kind: 'error', text: `Falló la exportación: ${errorMessage(e)}` });
     } finally {
       setBusy(null);
     }
@@ -61,9 +61,9 @@ export default function DataScreen() {
       }
       const b = parsed.value;
       const ok = await confirm(
-        'Replace all data?',
-        `This backup from ${b.exportedAt.slice(0, 10)} has ${b.workouts.length} workouts and ${b.logs.length} log entries. It will replace everything currently in the app.`,
-        'Replace',
+        '¿Reemplazar todos los datos?',
+        `Esta copia del ${b.exportedAt.slice(0, 10)} tiene ${b.workouts.length} entrenamientos y ${b.logs.length} entradas de registro. Reemplazará todo lo que hay ahora en la app.`,
+        'Reemplazar',
         true,
       );
       if (!ok) return;
@@ -71,9 +71,9 @@ export default function DataScreen() {
       await updateSettings({});
       await syncReminders(b.reminders, b.settings.remindersMuted, { askPermission: false });
       bump();
-      setMsg({ kind: 'success', text: 'Backup restored.' });
+      setMsg({ kind: 'success', text: 'Copia de seguridad restaurada.' });
     } catch (e) {
-      setMsg({ kind: 'error', text: `Restore failed and nothing was changed: ${errorMessage(e)}` });
+      setMsg({ kind: 'error', text: `Falló la restauración y no se cambió nada: ${errorMessage(e)}` });
     } finally {
       setBusy(null);
     }
@@ -81,13 +81,13 @@ export default function DataScreen() {
 
   const deleteAll = async () => {
     const first = await confirm(
-      'Delete everything?',
-      'All workouts, templates, logs, routine, reminders and settings will be permanently removed from this device. Consider exporting first.',
-      'Continue',
+      '¿Borrar todo?',
+      'Se eliminarán para siempre de este dispositivo todos los entrenamientos, plantillas, registros, rutina, recordatorios y ajustes. Quizá quieras exportar antes.',
+      'Continuar',
       true,
     );
     if (!first) return;
-    const second = await confirm('Are you sure?', 'This cannot be undone.', 'Delete everything', true);
+    const second = await confirm('¿Seguro?', 'Esto no se puede deshacer.', 'Borrar todo', true);
     if (!second) return;
     setBusy('delete');
     try {
@@ -98,7 +98,7 @@ export default function DataScreen() {
       bump();
       router.replace('/welcome');
     } catch (e) {
-      setMsg({ kind: 'error', text: `Deletion failed: ${errorMessage(e)}` });
+      setMsg({ kind: 'error', text: `Falló el borrado: ${errorMessage(e)}` });
     } finally {
       setBusy(null);
     }
@@ -110,39 +110,39 @@ export default function DataScreen() {
     <Screen>
       <Banner message={msg} onDismiss={() => setMsg(null)} />
       {!persistent ? (
-        <Banner message={{ kind: 'error', text: 'This browser is blocking storage. Data will be lost when the page closes; export before leaving.' }} onDismiss={() => undefined} />
+        <Banner message={{ kind: 'error', text: 'Este navegador bloquea el almacenamiento. Los datos se perderán al cerrar la página; exporta antes de salir.' }} onDismiss={() => undefined} />
       ) : null}
       <Body>{PRIVACY_SUMMARY}</Body>
 
       <Card>
-        <H2>Export</H2>
-        <Muted>A JSON backup contains everything and can be restored here. CSV files open in any spreadsheet.</Muted>
-        <Button testID="export-json" title="Export full backup (JSON)" onPress={exportJson} busy={busy === 'json'} disabled={busy !== null} />
-        <Button title="Export sets & logs (CSV)" kind="secondary" onPress={exportCsv} busy={busy === 'csv'} disabled={busy !== null} />
+        <H2>Exportar</H2>
+        <Muted>Una copia JSON contiene todo y se puede restaurar aquí. Los archivos CSV se abren en cualquier hoja de cálculo.</Muted>
+        <Button testID="export-json" title="Exportar copia completa (JSON)" onPress={exportJson} busy={busy === 'json'} disabled={busy !== null} />
+        <Button title="Exportar series y registros (CSV)" kind="secondary" onPress={exportCsv} busy={busy === 'csv'} disabled={busy !== null} />
       </Card>
 
       <Card>
-        <H2>Restore</H2>
-        <Muted>Pick a JSON backup made by this app. The file is checked before anything changes.</Muted>
-        <Button title="Restore from backup" kind="secondary" onPress={restore} busy={busy === 'restore'} disabled={busy !== null} />
+        <H2>Restaurar</H2>
+        <Muted>Elige una copia JSON hecha con esta app. El archivo se comprueba antes de cambiar nada.</Muted>
+        <Button title="Restaurar desde una copia" kind="secondary" onPress={restore} busy={busy === 'restore'} disabled={busy !== null} />
       </Card>
 
       <Card>
-        <H2>Where your data lives</H2>
-        <Muted>Database: {dbPath}</Muted>
+        <H2>Dónde están tus datos</H2>
+        <Muted>Base de datos: {dbPath}</Muted>
         {Platform.OS === 'web' ? (
           <Muted>
-            In a browser, data belongs to this browser only. Clearing site data removes it, and other devices don’t see it.
-            Export a backup now and then.
+            En un navegador, los datos son solo de ese navegador. Si borras los datos del sitio se pierden, y otros dispositivos
+            no los ven. Exporta una copia de vez en cuando.
           </Muted>
         ) : null}
-        {dir ? <Muted>Exports: {dir}exports/</Muted> : null}
+        {dir ? <Muted>Exportaciones: {dir}exports/</Muted> : null}
       </Card>
 
       <Card>
-        <H2>Delete all data</H2>
-        <Muted>Removes everything from this device and returns the app to a fresh install. Health-platform data is never touched.</Muted>
-        <Button testID="delete-all" title="Delete all data" kind="danger" onPress={deleteAll} busy={busy === 'delete'} disabled={busy !== null} />
+        <H2>Borrar todos los datos</H2>
+        <Muted>Elimina todo de este dispositivo y deja la app como recién instalada. Nunca se tocan los datos de la plataforma de salud.</Muted>
+        <Button testID="delete-all" title="Borrar todos los datos" kind="danger" onPress={deleteAll} busy={busy === 'delete'} disabled={busy !== null} />
       </Card>
     </Screen>
   );

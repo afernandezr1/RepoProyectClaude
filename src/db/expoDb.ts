@@ -35,6 +35,6 @@ export async function openAppDatabase(): Promise<OpenedDatabase> {
     return { db: b.db, path: b.label, persistent: b.persistent };
   }
   const raw = await SQLite.openDatabaseAsync(DATABASE_NAME);
-  const path = Platform.OS === 'web' ? 'browser storage (OPFS) for this site' : raw.databasePath;
+  const path = Platform.OS === 'web' ? 'almacenamiento del navegador (OPFS) de este sitio' : raw.databasePath;
   return { db: wrapExpoDatabase(raw), path, persistent: true };
 }

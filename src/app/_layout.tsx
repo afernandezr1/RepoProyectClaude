@@ -16,10 +16,10 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <SafeAreaView style={{ flex: 1, backgroundColor: t.bg, padding: 16, justifyContent: 'center' }}>
           {boot.status === 'loading' ? (
-            <LoadingState label="Opening your local data…" />
+            <LoadingState label="Abriendo tus datos locales…" />
           ) : (
             <ErrorState
-              message={`The local database could not be opened: ${errorMessage(boot.error)}`}
+              message={`No se pudo abrir la base de datos local: ${errorMessage(boot.error)}`}
               onRetry={retry}
             />
           )}
@@ -40,16 +40,16 @@ export default function RootLayout() {
           }}
         >
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="welcome" options={{ title: 'Welcome', headerBackVisible: false, gestureEnabled: false }} />
-          <Stack.Screen name="workout/[id]" options={{ title: 'Workout' }} />
-          <Stack.Screen name="history/[id]" options={{ title: 'Workout details' }} />
-          <Stack.Screen name="templates/index" options={{ title: 'Templates' }} />
-          <Stack.Screen name="templates/[id]" options={{ title: 'Edit template' }} />
-          <Stack.Screen name="routine" options={{ title: 'Weekly routine' }} />
-          <Stack.Screen name="log-new" options={{ title: 'New log entry', presentation: 'modal' }} />
-          <Stack.Screen name="reminders" options={{ title: 'Reminders' }} />
-          <Stack.Screen name="data" options={{ title: 'Your data' }} />
-          <Stack.Screen name="about" options={{ title: 'About & safety' }} />
+          <Stack.Screen name="welcome" options={{ title: 'Bienvenida', headerBackVisible: false, gestureEnabled: false }} />
+          <Stack.Screen name="workout/[id]" options={{ title: 'Entrenamiento' }} />
+          <Stack.Screen name="history/[id]" options={{ title: 'Detalle del entrenamiento' }} />
+          <Stack.Screen name="templates/index" options={{ title: 'Plantillas' }} />
+          <Stack.Screen name="templates/[id]" options={{ title: 'Editar plantilla' }} />
+          <Stack.Screen name="routine" options={{ title: 'Rutina semanal' }} />
+          <Stack.Screen name="log-new" options={{ title: 'Nueva entrada', presentation: 'modal' }} />
+          <Stack.Screen name="reminders" options={{ title: 'Recordatorios' }} />
+          <Stack.Screen name="data" options={{ title: 'Tus datos' }} />
+          <Stack.Screen name="about" options={{ title: 'Información y seguridad' }} />
           <Stack.Screen name="+not-found" options={{ headerShown: false }} />
         </Stack>
         <ConfirmHost />

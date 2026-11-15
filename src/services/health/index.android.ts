@@ -85,7 +85,7 @@ export const health: HealthAdapter = {
     );
   },
 
-  manageAccessHint: 'Review or change access in Health Connect › App permissions › Steady Log.',
+  manageAccessHint: 'Revisa o cambia el acceso en Health Connect › Permisos de apps › Steady Log.',
 };
 
 export * from './types';

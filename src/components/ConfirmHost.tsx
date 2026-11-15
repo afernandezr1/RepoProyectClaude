@@ -27,7 +27,7 @@ export function ConfirmHost() {
 
   return (
     <Modal visible={req !== null} transparent animationType="fade" onRequestClose={() => answer(false)}>
-      <Pressable style={styles.backdrop} onPress={() => answer(false)} accessibilityLabel="Cancel">
+      <Pressable style={styles.backdrop} onPress={() => answer(false)} accessibilityLabel="Cancelar">
         <Pressable
           style={[styles.dialog, { backgroundColor: t.card, borderColor: t.border }]}
           onPress={() => undefined}
@@ -36,10 +36,10 @@ export function ConfirmHost() {
           <Text style={[styles.title, { color: t.text }]}>{req?.title}</Text>
           <Muted>{req?.message}</Muted>
           <View style={styles.row}>
-            <Button testID="confirm-cancel" title="Cancel" kind="ghost" onPress={() => answer(false)} />
+            <Button testID="confirm-cancel" title="Cancelar" kind="ghost" onPress={() => answer(false)} />
             <Button
               testID="confirm-ok"
-              title={req?.confirmLabel ?? 'OK'}
+              title={req?.confirmLabel ?? 'Aceptar'}
               kind={req?.destructive ? 'danger' : 'primary'}
               onPress={() => answer(true)}
             />

@@ -57,7 +57,7 @@ export async function syncReminders(
   { askPermission }: { askPermission: boolean },
 ): Promise<ReminderSyncResult> {
   if (!notificationsSupported()) {
-    return { status: 'unavailable', reason: 'Reminders need the iOS or Android app.' };
+    return { status: 'unavailable', reason: 'Los recordatorios necesitan la app de iOS o Android.' };
   }
   try {
     await Notifications.cancelAllScheduledNotificationsAsync();
@@ -67,7 +67,7 @@ export async function syncReminders(
     if (!(await ensurePermission(askPermission))) return { status: 'denied' };
     if (Platform.OS === 'android') {
       await Notifications.setNotificationChannelAsync(CHANNEL_ID, {
-        name: 'Reminders',
+        name: 'Recordatorios',
         importance: AndroidImportance.DEFAULT,
       });
     }
@@ -75,7 +75,7 @@ export async function syncReminders(
     for (const r of active) {
       for (const day of r.weekdays) {
         await Notifications.scheduleNotificationAsync({
-          content: { title: r.label, body: 'A gentle reminder. Skip it whenever you like.' },
+          content: { title: r.label, body: 'Un recordatorio amable. Sáltatelo cuando quieras.' },
           trigger: {
             type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
             weekday: toNotificationWeekday(day),
@@ -89,7 +89,7 @@ export async function syncReminders(
     }
     return { status: 'scheduled', count };
   } catch (e) {
-    return { status: 'unavailable', reason: e instanceof Error ? e.message : 'Notifications are unavailable.' };
+    return { status: 'unavailable', reason: e instanceof Error ? e.message : 'Las notificaciones no están disponibles.' };
   }
 }
 

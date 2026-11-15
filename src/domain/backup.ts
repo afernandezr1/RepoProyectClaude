@@ -58,27 +58,27 @@ function checkArray<T>(
 ): Result<T[]> {
   const v = data[key];
   if (v === undefined) return ok([]);
-  if (!Array.isArray(v)) return err(`"${key}" should be a list.`);
+  if (!Array.isArray(v)) return err(`"${key}" debería ser una lista.`);
   for (let i = 0; i < v.length; i++) {
     const row = v[i];
-    if (!isObj(row) || !check(row)) return err(`Item ${i + 1} in "${key}" is not in the expected format.`);
+    if (!isObj(row) || !check(row)) return err(`El elemento ${i + 1} de "${key}" no tiene el formato esperado.`);
   }
   return ok(v as T[]);
 }
 
 /** Parse and validate a backup file. Never throws. */
 export function parseBackup(text: string): Result<BackupData> {
-  if (text.length > MAX_BACKUP_BYTES) return err('That file is too large to be a backup from this app.');
+  if (text.length > MAX_BACKUP_BYTES) return err('Ese archivo es demasiado grande para ser una copia de seguridad de esta app.');
   let raw: unknown;
   try {
     raw = JSON.parse(text);
   } catch {
-    return err("That file isn't valid JSON.");
+    return err('Ese archivo no es un JSON válido.');
   }
-  if (!isObj(raw)) return err("That file isn't a backup from this app.");
-  if (raw.format !== BACKUP_FORMAT) return err("That file isn't a backup from this app.");
+  if (!isObj(raw)) return err('Ese archivo no es una copia de seguridad de esta app.');
+  if (raw.format !== BACKUP_FORMAT) return err('Ese archivo no es una copia de seguridad de esta app.');
   if (typeof raw.version !== 'number' || raw.version > BACKUP_VERSION) {
-    return err('This backup was made by a newer version of the app.');
+    return err('Esta copia de seguridad se hizo con una versión más nueva de la app.');
   }
 
   const exercises = checkArray<Exercise>(raw, 'exercises', (r) => isStr(r.id) && isStr(r.name) && isStr(r.kind));
@@ -143,12 +143,12 @@ export function parseBackup(text: string): Result<BackupData> {
   // Referential checks: template rows must point at known exercises.
   const exerciseIds = new Set([...exercises.value.map((e) => e.id), ...BUILTIN_EXERCISES.map((e) => e.id)]);
   if (templates.value.some((t) => t.exercises.some((e) => !exerciseIds.has(e.exerciseId)))) {
-    return err('Some templates refer to exercises that are not in the file.');
+    return err('Algunas plantillas usan ejercicios que no están en el archivo.');
   }
   // Sets must point at known workouts.
   const workoutIds = new Set(workouts.value.map((w) => w.id));
   if (sets.value.some((s) => !workoutIds.has(s.workoutId))) {
-    return err('Some sets refer to workouts that are not in the file.');
+    return err('Algunas series pertenecen a entrenamientos que no están en el archivo.');
   }
 
   return ok({

@@ -77,7 +77,7 @@ export const health: HealthAdapter = {
     );
   },
 
-  manageAccessHint: 'Review or change access in the Health app: Profile › Apps › Steady Log.',
+  manageAccessHint: 'Revisa o cambia el acceso en la app Salud: Perfil › Apps › Steady Log.',
 };
 
 export * from './types';

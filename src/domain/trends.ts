@@ -238,7 +238,7 @@ function sumSets(t: ExerciseTrend): number {
   return t.points.reduce((a, p) => a + p.sets, 0);
 }
 
-const WEEKDAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const WEEKDAY_NAMES = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
 
 function plural(n: number, one: string, many = `${one}s`): string {
   return `${n} ${n === 1 ? one : many}`;
@@ -251,37 +251,37 @@ export function describe(t: TrendsResult, settings: Settings): string[] {
   const thisWeek = t.weeks[t.weeks.length - 1];
 
   out.push(
-    `This week: ${plural(thisWeek.sessions, 'session')} and ${plural(thisWeek.activeDays, 'active day')} so far.`,
+    `Esta semana: ${plural(thisWeek.sessions, 'sesión', 'sesiones')} y ${plural(thisWeek.activeDays, 'día activo', 'días activos')} por ahora.`,
   );
   if (t.plannedWorkoutDays > 0 || t.plannedRestDays > 0) {
     out.push(
-      `Your routine has ${plural(t.plannedWorkoutDays, 'workout day')} and ${plural(t.plannedRestDays, 'rest day')}. Rest days are part of the plan.`,
+      `Tu rutina tiene ${plural(t.plannedWorkoutDays, 'día de entrenamiento', 'días de entrenamiento')} y ${plural(t.plannedRestDays, 'día de descanso', 'días de descanso')}. Los días de descanso son parte del plan.`,
     );
   }
   out.push(
-    `You were active in ${t.consistency.weeksWithActivity} of the last ${plural(t.consistency.totalWeeks, 'week')}, about ${fmt(t.consistency.averageActiveDays)} active days per week on average.`,
+    `Hubo actividad en ${t.consistency.weeksWithActivity} de las últimas ${plural(t.consistency.totalWeeks, 'semana', 'semanas')}, con unos ${fmt(t.consistency.averageActiveDays)} días activos por semana de media.`,
   );
 
   const maxCount = Math.max(...t.weekdayPattern.map((p) => p.sessions));
   if (maxCount > 0) {
     const days = t.weekdayPattern.filter((p) => p.sessions === maxCount).map((p) => WEEKDAY_NAMES[p.weekday]);
-    out.push(`Sessions most often land on ${days.join(' and ')}.`);
+    out.push(days.length === 1 ? `El día con más sesiones: ${days[0]}.` : `Los días con más sesiones: ${days.slice(0, -1).join(', ')} y ${days[days.length - 1]}.`);
   }
 
   const sleeps = t.weeks.map((w) => w.sleepAverage).filter((v): v is number => v != null);
   if (sleeps.length > 0) {
     const a = sleeps.reduce((x, y) => x + y, 0) / sleeps.length;
-    out.push(`Logged sleep averaged ${fmt(a)} ${unitLabel(settings.sleepUnit)} per entry.`);
+    out.push(`El sueño registrado fue de ${fmt(a)} ${unitLabel(settings.sleepUnit)} de media por entrada.`);
   }
   const moods = t.weeks.map((w) => w.moodAverage).filter((v): v is number => v != null);
   if (moods.length > 0) {
     const a = moods.reduce((x, y) => x + y, 0) / moods.length;
-    out.push(`Logged mood averaged ${fmt(a)} ${unitLabel(settings.moodScale)}.`);
+    out.push(`El ánimo registrado fue de ${fmt(a)} ${unitLabel(settings.moodScale)} de media.`);
   }
   const energies = t.weeks.map((w) => w.energyAverage).filter((v): v is number => v != null);
   if (energies.length > 0) {
     const a = energies.reduce((x, y) => x + y, 0) / energies.length;
-    out.push(`Logged energy averaged ${fmt(a)} ${unitLabel(settings.energyScale)}.`);
+    out.push(`La energía registrada fue de ${fmt(a)} ${unitLabel(settings.energyScale)} de media.`);
   }
   return out;
 }
@@ -302,6 +302,24 @@ export const DISALLOWED_TREND_WORDS = [
   'streak lost',
   'diagnos',
   'bmi',
+  // Spanish
+  'perdiste',
+  'fallaste',
+  'fracas',
+  'vago',
+  'perezos',
+  'atrasad',
+  'deberías',
+  'debes',
+  'tienes que',
+  'gord',
+  'flac',
+  'caloría',
+  'perder peso',
+  'adelgaz',
+  'racha perdida',
+  'diagnós',
+  'imc',
 ];
 
 export function hasDisallowedLanguage(lines: string[]): string | null {

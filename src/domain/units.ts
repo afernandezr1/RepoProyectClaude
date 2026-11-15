@@ -110,11 +110,14 @@ export function unitLabel(unit: string | null): string {
   }
 }
 
-/** Round for display without trailing zero noise: 12.50 -> "12.5", 3.0 -> "3". */
+/**
+ * Round for display without trailing zero noise, with a decimal comma as used
+ * in Spanish: 12.50 -> "12,5", 3.0 -> "3". (Inputs accept both "," and ".".)
+ */
 export function fmt(n: number, maxDecimals = 1): string {
   if (!Number.isFinite(n)) return '–';
   const p = 10 ** maxDecimals;
-  return String(Math.round(n * p) / p);
+  return String(Math.round(n * p) / p).replace('.', ',');
 }
 
 export function formatSeconds(total: number): string {

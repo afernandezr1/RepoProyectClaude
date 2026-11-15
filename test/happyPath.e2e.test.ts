@@ -29,7 +29,7 @@ describe('happy path (end to end through SQLite)', () => {
 
     // First run: starter content exists, no personal history yet.
     const templates = await store.listTemplates();
-    expect(templates.map((t) => t.name)).toEqual(['Full Body A', 'Full Body B']);
+    expect(templates.map((t) => t.name)).toEqual(['Cuerpo completo A', 'Cuerpo completo B']);
     expect(await store.listHistory()).toEqual([]);
     expect((await store.getRoutine()).filter((d) => d.kind === 'rest')).toHaveLength(3);
 
@@ -149,6 +149,21 @@ describe('happy path (end to end through SQLite)', () => {
     // Re-initialising (next app launch) does not duplicate starter templates.
     await store.init();
     expect(await store.listTemplates()).toHaveLength(2);
+  });
+
+  it('translates untouched starter content from the English version, but never user edits', async () => {
+    const store = await freshStore();
+    await store.init();
+    const [a, b] = await store.listTemplates();
+    const asInput = (t: typeof a, name: string) => ({ id: t.id, name, notes: t.notes, exercises: t.exercises });
+    await store.saveTemplate(asInput(a, 'Full Body A')); // as the English version seeded it
+    await store.saveTemplate(asInput(b, 'Mi rutina de jueves')); // renamed by the user
+    const custom = await store.createExercise('Kettlebell swing', 'weight_reps');
+    await store.init(); // next launch
+    expect((await store.listTemplates()).map((t) => t.name).sort()).toEqual(['Cuerpo completo A', 'Mi rutina de jueves']);
+    const names = (await store.listExercises()).map((e) => e.name);
+    expect(names).toContain('Sentadilla goblet');
+    expect(names).toContain(custom.name);
   });
 
   it('rolls back a failed restore and keeps existing data', async () => {

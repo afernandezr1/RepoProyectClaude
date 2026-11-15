@@ -25,15 +25,15 @@ export function addDays(d: Date, n: number): Date {
   return r;
 }
 
-export const WEEKDAY_SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const;
-export const WEEKDAY_LONG = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as const;
+export const WEEKDAY_SHORT = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'] as const;
+export const WEEKDAY_LONG = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'] as const;
 
 /** expo-notifications weekly triggers use 1 = Sunday ... 7 = Saturday. */
 export function toNotificationWeekday(w: Weekday): number {
   return ((w + 1) % 7) + 1;
 }
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sept', 'oct', 'nov', 'dic'];
 
 export function shortDate(d: Date): string {
   return `${d.getDate()} ${MONTHS[d.getMonth()]}`;
@@ -41,7 +41,7 @@ export function shortDate(d: Date): string {
 
 export function formatDateTime(iso: string): string {
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return 'Unknown date';
+  if (Number.isNaN(d.getTime())) return 'Fecha desconocida';
   const hh = d.getHours().toString().padStart(2, '0');
   const mm = d.getMinutes().toString().padStart(2, '0');
   return `${WEEKDAY_SHORT[mondayWeekday(d)]} ${shortDate(d)} ${d.getFullYear()}, ${hh}:${mm}`;

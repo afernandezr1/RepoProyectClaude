@@ -43,7 +43,7 @@ export default function WorkoutScreen() {
     [drafts, settings.weightUnit, settings.distanceUnit],
   );
 
-  if (state.status === 'loading') return <LoadingState label="Loading workout…" />;
+  if (state.status === 'loading') return <LoadingState label="Cargando entrenamiento…" />;
   if (state.status === 'error') {
     return (
       <Screen>
@@ -55,7 +55,7 @@ export default function WorkoutScreen() {
   if (!detail) {
     return (
       <Screen>
-        <EmptyState title="Workout not found" body="It may have been discarded." actionLabel="Back" onAction={() => router.back()} />
+        <EmptyState title="No se encontró el entrenamiento" body="Puede que se haya descartado." actionLabel="Volver" onAction={() => router.back()} />
       </Screen>
     );
   }
@@ -63,8 +63,8 @@ export default function WorkoutScreen() {
     return (
       <Screen>
         <EmptyState
-          title="This workout is finished"
-          actionLabel="View details"
+          title="Este entrenamiento ya terminó"
+          actionLabel="Ver detalles"
           onAction={() => router.replace(`/history/${detail.workout.id}`)}
         />
       </Screen>
@@ -107,16 +107,16 @@ export default function WorkoutScreen() {
       });
       setDrafts(({ [s.id]: _omit, ...rest }) => rest);
       if (s.restSeconds > 0) setTimer(startTimer(s.restSeconds, Date.now()));
-    }, "Couldn't save the set");
+    }, "No se pudo guardar la serie");
 
   const finish = async () => {
-    const n = validateText(notes ?? detail.workout.notes, 'Notes');
+    const n = validateText(notes ?? detail.workout.notes, 'Notas');
     if (!n.ok) return setMsg({ kind: 'error', text: n.error });
     if (completedCount === 0) {
       const discard = await confirm(
-        'No completed sets',
-        'Nothing has been marked done yet. Discard this workout?',
-        'Discard',
+        'Ninguna serie completada',
+        'Todavía no has marcado nada como hecho. ¿Descartar este entrenamiento?',
+        'Descartar',
         true,
       );
       if (discard) await discardNow();
@@ -125,9 +125,11 @@ export default function WorkoutScreen() {
     const remaining = detail.sets.length - completedCount;
     if (remaining > 0) {
       const ok = await confirm(
-        'Finish workout?',
-        `${remaining} unchecked set${remaining === 1 ? '' : 's'} won't be saved. That's completely fine.`,
-        'Finish',
+        '¿Terminar el entrenamiento?',
+        remaining === 1
+          ? '1 serie sin marcar no se guardará. No pasa nada.'
+          : `${remaining} series sin marcar no se guardarán. No pasa nada.`,
+        'Terminar',
       );
       if (!ok) return;
     }
@@ -137,7 +139,7 @@ export default function WorkoutScreen() {
       bump();
       router.replace(`/history/${detail.workout.id}?saved=1`);
     } catch (e) {
-      setMsg({ kind: 'error', text: `Couldn't finish: ${errorMessage(e)}` });
+      setMsg({ kind: 'error', text: `No se pudo terminar: ${errorMessage(e)}` });
     } finally {
       setBusy(false);
     }
@@ -149,19 +151,19 @@ export default function WorkoutScreen() {
       bump();
       router.replace('/');
     } catch (e) {
-      setMsg({ kind: 'error', text: `Couldn't discard: ${errorMessage(e)}` });
+      setMsg({ kind: 'error', text: `No se pudo descartar: ${errorMessage(e)}` });
     }
   };
 
   const discard = async () => {
-    if (await confirm('Discard workout?', 'This removes the workout and its sets.', 'Discard', true)) await discardNow();
+    if (await confirm('¿Descartar el entrenamiento?', 'Se eliminarán el entrenamiento y sus series.', 'Descartar', true)) await discardNow();
   };
 
   const addExercise = (e: Exercise) =>
     run(async () => {
       await store.addExerciseToWorkout(detail.workout.id, e.id, settings.defaultRestSeconds);
       setPicking(false);
-    }, "Couldn't add the exercise");
+    }, "No se pudo añadir el ejercicio");
 
   const createExercise = async (name: string, kind: ExerciseKind) => {
     const e = await store.createExercise(name, kind);
@@ -170,13 +172,13 @@ export default function WorkoutScreen() {
 
   return (
     <Screen>
-      <Muted>Started {formatDateTime(detail.workout.startedAt)}</Muted>
+      <Muted>Empezado: {formatDateTime(detail.workout.startedAt)}</Muted>
       <H2>{detail.workout.name}</H2>
       <Banner message={msg} onDismiss={() => setMsg(null)} />
       <RestTimerBar timer={timer} onChange={setTimer} onDismiss={() => setTimer(IDLE_TIMER)} />
 
       {groups.size === 0 ? (
-        <EmptyState title="No exercises yet" body="Add an exercise to start logging sets." />
+        <EmptyState title="Aún no hay ejercicios" body="Añade un ejercicio para empezar a registrar series." />
       ) : null}
 
       {Array.from(groups.entries()).map(([position, sets]) => {
@@ -184,7 +186,7 @@ export default function WorkoutScreen() {
         const kind: ExerciseKind = ex?.kind ?? 'weight_reps';
         return (
           <Card key={position}>
-            <Body style={{ fontWeight: '600' }}>{ex?.name ?? 'Exercise'}</Body>
+            <Body style={{ fontWeight: '600' }}>{ex?.name ?? 'Ejercicio'}</Body>
             {sets.map((s, i) => {
               const d = draftFor(s);
               const setDraft = (patch: Partial<SetInput>) => setDrafts((all) => ({ ...all, [s.id]: { ...d, ...patch } }));
@@ -214,7 +216,7 @@ export default function WorkoutScreen() {
                   {kind === 'duration' ? (
                     <Field
                       style={styles.input}
-                      label="seconds"
+                      label="segundos"
                       value={d.duration}
                       onChangeText={(v) => setDraft({ duration: v })}
                       keyboardType="number-pad"
@@ -233,7 +235,7 @@ export default function WorkoutScreen() {
                     testID={`done-${s.id}`}
                     accessibilityRole="checkbox"
                     accessibilityState={{ checked: s.completed }}
-                    accessibilityLabel={`Set ${i + 1} done`}
+                    accessibilityLabel={`Serie ${i + 1} hecha`}
                     onPress={() => toggle(s)}
                     style={[
                       styles.check,
@@ -244,8 +246,8 @@ export default function WorkoutScreen() {
                   </Pressable>
                   <Pressable
                     accessibilityRole="button"
-                    accessibilityLabel={`Remove set ${i + 1}`}
-                    onPress={() => run(() => store.removeSet(s.id), "Couldn't remove the set")}
+                    accessibilityLabel={`Quitar serie ${i + 1}`}
+                    onPress={() => run(() => store.removeSet(s.id), "No se pudo quitar la serie")}
                     hitSlop={12}
                     style={styles.remove}
                   >
@@ -259,10 +261,10 @@ export default function WorkoutScreen() {
               <Button
                 small
                 kind="ghost"
-                title="+ Add set"
-                onPress={() => run(() => store.addSet(detail.workout.id, sets[0].exerciseId, position), "Couldn't add a set")}
+                title="+ Añadir serie"
+                onPress={() => run(() => store.addSet(detail.workout.id, sets[0].exerciseId, position), "No se pudo añadir una serie")}
               />
-              <Muted>Rest {sets[0].restSeconds}s</Muted>
+              <Muted>Descanso {sets[0].restSeconds} s</Muted>
             </Row>
           </Card>
         );
@@ -276,18 +278,18 @@ export default function WorkoutScreen() {
           onCancel={() => setPicking(false)}
         />
       ) : (
-        <Button title="+ Add exercise" kind="secondary" onPress={() => setPicking(true)} />
+        <Button title="+ Añadir ejercicio" kind="secondary" onPress={() => setPicking(true)} />
       )}
 
       <Field
-        label="Notes (optional)"
+        label="Notas (opcional)"
         value={notes ?? detail.workout.notes}
         onChangeText={setNotes}
         multiline
         maxLength={2000}
       />
-      <Button testID="finish-workout" title={`Finish (${completedCount} done)`} onPress={finish} busy={busy} />
-      <Button title="Discard workout" kind="ghost" onPress={discard} />
+      <Button testID="finish-workout" title={completedCount === 1 ? 'Terminar (1 hecha)' : `Terminar (${completedCount} hechas)`} onPress={finish} busy={busy} />
+      <Button title="Descartar entrenamiento" kind="ghost" onPress={discard} />
     </Screen>
   );
 }

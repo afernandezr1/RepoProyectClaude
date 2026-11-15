@@ -7,7 +7,7 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 import { radius, space, useTheme } from './theme';
 import { Button, Muted } from './ui';
 
-export function LoadingState({ label = 'Loading…' }: { label?: string }) {
+export function LoadingState({ label = 'Cargando…' }: { label?: string }) {
   const t = useTheme();
   return (
     <View style={styles.center} accessibilityRole="progressbar" accessibilityLabel={label}>
@@ -42,10 +42,10 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
   const t = useTheme();
   return (
     <View style={[styles.box, { borderColor: t.danger, backgroundColor: t.errorBg }]} accessibilityRole="alert">
-      <Text style={[styles.title, { color: t.text }]}>Something went wrong</Text>
+      <Text style={[styles.title, { color: t.text }]}>Algo salió mal</Text>
       <Muted style={{ textAlign: 'center' }}>{message}</Muted>
-      <Muted style={{ textAlign: 'center' }}>Your saved data is unchanged.</Muted>
-      {onRetry ? <Button title="Try again" onPress={onRetry} kind="secondary" /> : null}
+      <Muted style={{ textAlign: 'center' }}>Tus datos guardados no han cambiado.</Muted>
+      {onRetry ? <Button title="Reintentar" onPress={onRetry} kind="secondary" /> : null}
     </View>
   );
 }
@@ -70,7 +70,7 @@ export function Banner({ message, onDismiss }: { message: BannerMessage | null; 
     <Pressable
       onPress={onDismiss}
       accessibilityRole="alert"
-      accessibilityLabel={`${message.text}. Tap to dismiss.`}
+      accessibilityLabel={`${message.text}. Toca para cerrar.`}
       style={[styles.banner, { backgroundColor: bg }]}
     >
       <Text style={{ color: t.text, flex: 1 }}>{message.text}</Text>
@@ -82,7 +82,7 @@ export function Banner({ message, onDismiss }: { message: BannerMessage | null; 
 export function errorMessage(e: unknown): string {
   if (e instanceof Error && e.message) return e.message;
   if (typeof e === 'string') return e;
-  return 'An unexpected error occurred.';
+  return 'Ha ocurrido un error inesperado.';
 }
 
 const styles = StyleSheet.create({
